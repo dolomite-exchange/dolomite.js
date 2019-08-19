@@ -6,6 +6,7 @@ import ExchangeService from './Exchange/ExchangeService';
 import TokenService from './Tokens/TokenService';
 import OrderService from './Orders/OrderService';
 import AccountService from './Accounts/AccountService';
+import ReferralService from './Referral/ReferralService';
 
 const EXCHANGE_API_URL = 'https://exchange-api.dolomite.io';
 const EXCHANGE_WEBSOCKET_URL = 'wss://exchange-api.dolomite.io/ws-connect';
@@ -24,7 +25,8 @@ class Exchange extends Package {
         exchange: ExchangeService,
         tokens: TokenService,
         orders: OrderService,
-        accounts: AccountService
+        accounts: AccountService,
+        referral: ReferralService
       }
     });
   }

@@ -46,7 +46,23 @@ export default class MarketService extends Service {
   // ----------------------------------------------
   // Market Chart
 
-  watchChart(market, interval, base = 'CRYPTO') {
+  async watchChart(market, interval, base = 'CRYPTO') {
+    const isDifferent = (this.watchedMarket && this.watchedMarket !== market)
+      || (this.watchedInterval && this.watchedInterval !== interval)
+      || (this.watchedBase && this.watchedBase !== base);
+
+    if (isDifferent) {
+      await this.send('/v1/candlesticks/-market-', 'unsubscribe', {
+        market: this.watchedMarket,
+        interval: this.watchedInterval,
+        base_symbol: this.watchedBase
+      });
+    }
+
+    this.watchedMarket = market;
+    this.watchedInterval = interval;
+    this.watchedBase = base;
+
     return this.send('/v1/candlesticks/-market-', 'subscribe', {
       market: market,
       interval: interval,

@@ -25,20 +25,17 @@ export default class AddressService extends Service {
 
   /////////////////////////
 
-  watch(address) {
-    this.watchAddress = address;
-
-    return Promise.all([
-      this.send('/v1/watch-wallet', 'subscribe', {
-        address: address
-      }),
-      this.send('/v1/addresses/-address-/info', 'subscribe', {
-        address: address
-      }),
-      this.send('/v1/addresses/-address-/portfolio', 'subscribe', {
-        address: address
+  async watch(address) {
+    if (this.watchAddress && this.watchAddress !== address) {
+      await this.send('/v1/watch-wallet', 'unsubscribe', {
+        address: this.watchAddress
       })
-    ]);
+    }
+
+    this.watchAddress = address;
+    return this.send('/v1/watch-wallet', 'subscribe', {
+      address: address
+    })
   }
 
   // ----------------------------------------------

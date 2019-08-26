@@ -15,9 +15,9 @@ export default class Order {
     loopring_contract_address, loopring_delegate_address, fee_collecting_wallet_address,
     owner_address, auth_address, primary_amount, secondary_amount, usd_amount_at_creation,
     dealt_amount_primary, dealt_amount_secondary, placement_timestamp, expiration_timestamp, fee_amount,
-    fee_usd_at_creation, fee_usd_average, exchange_more_than_amount, exchange_rate,
-    margin_split_percentage, ecdsa_signature, proof_of_work_nonce, primary_token, secondary_token,
-    close_timestamp, usd_amount_at_close, usd_fee_at_creation, usd_fee_at_close}) {
+    fee_usd_at_creation, fee_usd_average, exchange_more_than_amount, exchange_rate, ecdsa_signature,
+    margin_split_percentage, proof_of_work_nonce, primary_token, secondary_token, close_timestamp,
+    usd_amount_at_close, usd_fee_at_creation, usd_fee_at_close, market_order_effective_price}) {
     
     this.id = dolomite_order_id;
     this.orderHash = order_hash;
@@ -34,7 +34,8 @@ export default class Order {
     this.status = order_status;
     this.amount = new BigNumber(primary_amount);
     this.volume = new BigNumber(secondary_amount);
-    this.price = exchange_rate;
+    const marketOrderPrice = market_order_effective_price && new BigNumber(market_order_effective_price);
+    this.price = marketOrderPrice ? marketOrderPrice.amount : exchange_rate;
     this.dealtAmountPrimary = new BigNumber(dealt_amount_primary);
     this.dealtAmountSecondary = new BigNumber(dealt_amount_secondary);
     this.openAmountPrimary = toOpenAmount(dealt_amount_primary, primary_amount);

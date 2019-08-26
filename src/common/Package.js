@@ -55,13 +55,18 @@ export default class Package extends PackageService {
     return allServices;
   }
 
-  configure({ apiKey, getAuthToken }) {
-    this.getAuthToken = getAuthToken || (() => Promise.reject('getAuthToken not defined on package'));
+  configure({ apiKey, getAuthToken, url, websocketUrl }) {
+    if (!this.getAuthToken) this.getAuthToken = (() => Promise.reject('getAuthToken not defined on package'));
+    if (getAuthToken) this.getAuthToken = getAuthToken
+    
     this.configureService(apiKey);
+    if (url) this.url = url
+    if (websocketUrl) this.wsUrl = websocketUrl
 
     this.services.forEach(service => {
       service.configureService(apiKey);
       service.getAuthToken = this.getAuthToken;
+      if (url) service.url = url
     });
   }
 

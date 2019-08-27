@@ -1,21 +1,21 @@
-import Service from '../../common/Service';
+import AuthService from '../../common/AuthService';
 
 import Referral from './Referral';
 import Friend from './Friend';
 import Withdrawal from './Withdrawal';
 import Commission from './Commission';
 
-export default class ReferralService extends Service {
+export default class ReferralService extends AuthService {
 
   static routes = {
     info: {
       get: '/v1/referrals/:address/info'
     },
     friends: {
-      get: '/v1/referrals/:address/referred-accounts'
+      get: '/v1/referrals/referrer-addresses/:address/referred-accounts'
     },
-    withdrawals: {
-      get: '/v1/referrals/withdrawals'
+    withdrawalsByID: {
+      get: '/v1/referrals/:accountId/withdrawals'
     },
     withdraw: {
       post: '/v1/referrals/withdraw/:address'
@@ -47,26 +47,26 @@ export default class ReferralService extends Service {
       .get(options, { address });
   }
 
-  getWithdrawals(address, options = {}) {
-    return this.pageable('withdrawals')
+  getWithdrawalsByID(accountId, options = {}) {
+    return this.pageable('withdrawalsByID')
       .build(data => Withdrawal.build(data))
-      .get(options, { address });
+      .get(options, { accountId });
   }
 
   getCommissionsByAddress(address, options = {}) {
     return this.pageable('commissionsByAddress')
-      .build(data => Withdrawal.build(data))
+      .build(data => Commission.build(data))
       .get(options, { address });
   }
 
-  getCommissionsByID(address, options = {}) {
+  getCommissionsByID(accountId, options = {}) {
     return this.pageable('commissionsByID')
-      .build(data => Withdrawal.build(data))
-      .get(options, { address });
+      .build(data => Commission.build(data))
+      .get(options, { accountId });
   }
 
   withdraw(address) {
-    return this.post('withdraw', { address });
+    return this.requiresAuth.post('withdraw', { address });
   }
 
   watch(address) {

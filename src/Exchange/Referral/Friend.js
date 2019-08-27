@@ -1,8 +1,8 @@
 
 export default class Friend {
-  constructor({address, creation_timestamp}) {
+  constructor({wallet_address, creation_timestamp}) {
 
-    this.address = address;
+    this.address = wallet_address;
     this.creationTimestamp = creation_timestamp;
 
   }

@@ -1,5 +1,6 @@
 import Service from '../../common/Service';
 import BigNumber from '../../common/BigNumber';
+import WSWrapper from '../../common/websockets/WSWrapper';
 
 import ExchangeInfo from './ExchangeInfo';
 import ExchangeRates from './ExchangeRates';
@@ -34,6 +35,14 @@ export default class ExchangeService extends Service {
   getInfo() {
     return this.get('info')
       .then(body => new ExchangeInfo(body.data));
+  }
+
+  onUpdateInfo(callback) {
+    if (!this.infoWS) this.infoWS = new WSWrapper(() => {
+      return this.getInfo(); 
+    }, 30); // update exchange info every 30s
+
+    this.infoWS.subscribe(callback);
   }
 
   isUnsupportedRegion() {

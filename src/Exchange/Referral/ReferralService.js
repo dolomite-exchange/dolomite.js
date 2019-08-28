@@ -69,7 +69,14 @@ export default class ReferralService extends AuthService {
     return this.requiresAuth.post('withdraw', { address });
   }
 
-  watch(address) {
+  async watch(address) {
+    if (this.watchAddress && this.watchAddress !== address) {
+      await this.send('/v1/referrals/withdraw/-address-', 'unsubscribe', {
+        address: this.watchAddress
+      });
+    }
+
+    this.watchAddress = address;
     return this.send('/v1/referrals/withdraw/-address-', 'subscribe', {
       address: address
     });

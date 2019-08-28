@@ -188,12 +188,6 @@ export default class Service {
     return this.request(verb, route.url, route.params, headers);
   }
 
-  constructGetUrl(route, params) {
-    const url = new URL(route);
-    url.search = new URLSearchParams(params)
-    return url;
-  }
-
   formDataRequest(verb, resource, fieldsOrParams = {}, additionalHeaders = {}) {
     if (!this.apiKey) return Promise.reject('Needs configuration: No API key provided');
 
@@ -221,8 +215,15 @@ export default class Service {
 
     const isUsingUrlParams = verb == 'get';
     if (isUsingUrlParams) {
+      const buildParams = new URLSearchParams();
+
+      Object.entries(params).forEach(([key, value]) => {
+         if (Array.isArray(value)) value.forEach((entry) => buildParams.append(key, entry))
+         else buildParams.append(key, value)
+      })
+
       let builder = new URL(route);
-      builder.search = new URLSearchParams(params);
+      builder.search = buildParams;
       url = route + builder.search;
     }
 

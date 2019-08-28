@@ -71,7 +71,14 @@ export default class OrderService extends Service {
       .then(body => DepthChart.buildUnmerged(body.data));
   }
 
-  watchDepthChart(market) {
+  async watchDepthChart(market) {
+    if (this._watchedChart && this._watchedChart != market) {
+      await this.send('/v1/orders/markets/-market-/depth/unmerged', 'unsubscribe', {
+        market: this._watchedChart
+      });
+    }
+
+    this._watchedChart = market
     return this.send('/v1/orders/markets/-market-/depth/unmerged', 'subscribe', {
       market: market
     });
@@ -97,7 +104,14 @@ export default class OrderService extends Service {
     }).then(body => OrderFill.build(body.data));
   }
 
-  watchFills(market) {
+  async watchFills(market) {
+    if (this._watchedFills && this._watchedFills != market) {
+      await this.send('/v1/orders/markets/-market-/fills', 'unsubscribe', {
+        market: this._watchedFills
+      });
+    }
+
+    this._watchedFills = market
     return this.send('/v1/orders/markets/-market-/fills', 'subscribe', {
       market: market
     });

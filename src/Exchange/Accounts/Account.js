@@ -27,7 +27,8 @@ export default class Account {
     this.depositAddress = deposit_wallet_address;
     this.addresses = [wallet_address];
     this.isSmartWallet = is_smart_wallet_address;
-    this.walletType = wallet_type
+    this.walletType = wallet_type;
+    this.isManaged = wallet_type === 'MANAGED';
     this.isResidenceSupported = true; //is_residence_in_supported_region;
     this.isFiatGatewayAvailable = is_fiat_gateway_available;
 

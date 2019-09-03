@@ -18,6 +18,9 @@ export default class AccountService extends Service {
     signatureLogin: {
       post: '/v1/accounts/login/signature'
     },
+    reauth: {
+      post: '/v1/accounts/reauth'
+    }
   };
 
   static exports = {
@@ -49,6 +52,12 @@ export default class AccountService extends Service {
       auth_signature: signature,
       timestamp: timestamp
     }).then(body => new AuthToken(body.data.token));
+  }
+
+  reauthWithToken(authToken) {
+    return this.post('reauth', {}, {
+      Authorization: authToken
+    }).then(body => new AuthToken(body.data));
   }
 
   // ----------------------------------------------

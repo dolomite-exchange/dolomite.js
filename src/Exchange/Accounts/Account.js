@@ -20,7 +20,7 @@ export default class Account {
       is_smart_wallet_address,
       wallet_address,
       wallet_type
-    } = wallet;
+    } = wallet || {};
 
     this.id = dolomite_account_id;
     this.address = wallet_address;

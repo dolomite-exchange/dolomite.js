@@ -72,7 +72,7 @@ export default class AddressService extends Service {
 
   onAccountUpdate(callback) {
     return this.on('/v1/addresses/-address-/info', 'update')
-      .build(data => new Account(data))
+      .build(data => { console.log(data); return new Account(data)})
       .then(callback)
   }
 

@@ -17,6 +17,10 @@ class AuthToken {
   isExpired() {
     return Date.now() > (this.expiration * 1000);
   }
+
+  get hasWyreSession() {
+    return this.decoded.encrypted_session && (Date.now() <= this.decoded.session_expiration);
+  }
 }
 
 export default AuthToken;

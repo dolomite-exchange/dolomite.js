@@ -15,8 +15,8 @@ export default class AccountService extends Service {
       post: '/v1/accounts/create',
       prepare: '/v1/accounts/create/prepare/:address',
     },
-    login: {
-      post: '/v1/accounts/:account_id/login'
+    signatureLogin: {
+      post: '/v1/accounts/login/signature'
     },
   };
 
@@ -36,43 +36,45 @@ export default class AccountService extends Service {
   // ----------------------------------------------
   // Login
 
-  getLoginSignatureData() {
-    const AccountLogin = [{ name: "verificationCode", type: "string" }]; // the timestamp in milli
+  getLoginSignatureMessage() {
     const timestamp = Date.now();
-    const data = SignatureData('AccountLogin', AccountLogin, {
-      verificationCode: `${timestamp}`
-    });
-    data.timestamp = timestamp;
-    return data;
+    const message = `Login to Dolomite. Code: ${timestamp}`;
+    return { message, timestamp };
   }
 
-  login({ accountId, address, signature, timestamp }) {
-    return this.post('login', {
+  signatureLogin({ accountId, address, signature, timestamp }) {
+    return this.post('signatureLogin', {
       account_id: accountId,
       wallet_address: address,
       auth_signature: signature,
       timestamp: timestamp
-    }).then(body => new AuthToken(body.data));
+    }).then(body => new AuthToken(body.data.token));
   }
 
   // ----------------------------------------------
   // Create Account
 
-  prepareCreateAccount({ address }) {
+  prepareCreateAccount(address) {
     return this.prepare('create', { address })
       .then(body => new PrepareMessage(body.data));
   }
 
-  createAccount({ firstName, lastName, email, dateOfBirth, address, signature, prepareId, subscribedToMarketing }) {
+  createAccount({ firstName, lastName, email, dateOfBirth, address, signature, 
+    prepareId, prepareMessage, passwordHash, encryptedPrivateKey, encryptedMnemonic,
+    subscribedToMarketing }) {
     return this.post('create', {
       first_name: firstName,
       last_name: lastName,
       email: email,
       date_of_birth: dateOfBirth,
       wallet_address: address,
+      password_hash: passwordHash,
+      encrypted_private_key: encryptedPrivateKey,
+      encrypted_mnemonic: encryptedMnemonic,
+      is_subscribed_to_marketing: subscribedToMarketing,
       auth_signature: signature,
       prepare_id: prepareId,
-      is_subscribed_to_marketing: subscribedToMarketing
+      prepare_message: prepareMessage,
     }).then(body => new AuthToken(body.data));
   }
 }

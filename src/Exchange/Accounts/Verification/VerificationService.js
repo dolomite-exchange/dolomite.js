@@ -179,29 +179,31 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Change Email
 
-  prepareChangeEmail({ address, accountId }) {
-    return this.prepare('changeEmail', { address, account_id: accountId })
-      .then(body => new PrepareMessage(body.data));
-  }
+  // prepareChangeEmail({ address, accountId }) {
+  //   return this.prepare('changeEmail', { address, account_id: accountId })
+  //     .then(body => new PrepareMessage(body.data));
+  // }
 
-  changeEmail({ address, accountId, email, signature, prepareId }) {
-    return this.post('changeEmail', {
-      account_id: accountId,
-      email: email,
-      auth_signature: signature,
-      prepare_id: prepareId,
+  changeEmail(email, /*{ address, accountId, email, signature, prepareId }*/) {
+    return this.requiresWyreSession('changeEmail').post('changeEmail', { email });
+    
+    // return this.post('changeEmail', {
+    //   account_id: accountId,
+    //   email: email,
+    //   auth_signature: signature,
+    //   prepare_id: prepareId,
 
-      // TODO: remove these when backend fixes this route to remove
-      // deprecated required fields
-      wallet_address: '0x0000000000000000000000000000000000000000', 
-      timestamp: Date.now(),
-    });
+    //   // TODO: remove these when backend fixes this route to remove
+    //   // deprecated required fields
+    //   wallet_address: '0x0000000000000000000000000000000000000000', 
+    //   timestamp: Date.now(),
+    // });
   }
 
   // ----------------------------------------------
   // Resend Email
 
-  resendVerificationEmail({ address, /*timestamp, signature,*/ accountId }) {
+  resendVerificationEmail({ address, accountId }) {
     return this.requiresAuth.post('resendEmail', {
       wallet_address: address,
       account_id: accountId

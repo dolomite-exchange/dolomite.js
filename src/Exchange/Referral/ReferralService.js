@@ -36,9 +36,6 @@ export default class ReferralService extends AuthService {
   getInfo(address) {
     return this.get('info', { address })
       .then(body => new Referral(body.data))
-      .catch(error => {
-        console.log(error);
-      });
   }
 
   getFriends(address, options = {}) {
@@ -87,5 +84,4 @@ export default class ReferralService extends AuthService {
       .build(data => Withdrawal.build(data))
       .then(callback);
   }
-
 }

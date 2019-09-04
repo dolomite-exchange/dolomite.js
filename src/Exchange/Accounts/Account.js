@@ -1,4 +1,5 @@
 import BigNumber from '../../common/BigNumber';
+import AuthToken from './Verification/AuthToken';
 
 /*
  * Details of an account
@@ -41,5 +42,13 @@ export default class Account {
     this.didFailUpgradingTier = !!failed_upgrading_to_verification_tier_number;
     this.dailyLimit = (new BigNumber(daily_max_trade_amount_usd)).amount;
     this.dailyUsage = (new BigNumber(daily_used_trade_amount_usd)).amount;
+  }
+}
+
+export class LoginRequest {
+  constructor({ token, is_2fa_required, verification_method }) {
+    this.token = token && new AuthToken(token);
+    this.verificationMethod = verification_method;
+    this.is2FARequired = is_2fa_required;
   }
 }

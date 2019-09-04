@@ -23,7 +23,7 @@ class AuthToken {
   }
 
   get hasWyreSession() {
-    return this.decoded.encrypted_session && (Date.now() <= this.decoded.session_expiration);
+    return !!(this.decoded.encrypted_session && (Date.now() <= this.decoded.session_expiration));
   }
 
   get accountDetails() {

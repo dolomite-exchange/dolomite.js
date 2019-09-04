@@ -4,4 +4,4 @@ import slateExport from './Slate/Slate';
 export const exchange = exchangeExport;
 export const slate = slateExport;
 
-export default "Hello";
+export default { exchange, slate };

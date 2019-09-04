@@ -1,5 +1,6 @@
 import WSManager from './websockets/WSManager';
 import WSConnection from './websockets/WSConnection';
+import BigNumber from './BigNumber';
 import Service from './Service';
 
 class PackageService extends Service {
@@ -92,7 +93,9 @@ export default class Package extends PackageService {
   }
 
   get exports() {
-    let classes = {};
+    let classes = {
+      BigNumber,
+    };
 
     this.serviceTypes.forEach(ServiceType => {
       classes = {

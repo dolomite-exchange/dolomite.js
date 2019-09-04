@@ -25,16 +25,16 @@ export default class AddressService extends Service {
 
   /////////////////////////
 
-  async watch(address) {
-    if (this.watchAddress && this.watchAddress !== address) {
+  async watch(ownerAddress, depositAddress) {
+    if (this.watchAddress && this.watchAddress !== ownerAddress) {
       await this.send('/v1/watch-wallet', 'unsubscribe', {
         address: this.watchAddress
       })
     }
 
-    this.watchAddress = address;
+    this.watchAddress = ownerAddress;
     return this.send('/v1/watch-wallet', 'subscribe', {
-      address: address
+      address: ownerAddress
     })
   }
 
@@ -72,7 +72,7 @@ export default class AddressService extends Service {
 
   onAccountUpdate(callback) {
     return this.on('/v1/addresses/-address-/info', 'update')
-      .build(data => { console.log(data); return new Account(data)})
+      .build(data => new Account(data))
       .then(callback)
   }
 

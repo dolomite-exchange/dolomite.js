@@ -1,6 +1,6 @@
 import Service from '../../common/Service';
 
-import Account from './Account';
+import Account, { LoginRequest } from './Account';
 import AuthToken from './Verification/AuthToken';
 import SignatureData from './Verification/SignatureData';
 import PrepareMessage from './Verification/PrepareMessage';
@@ -17,6 +17,12 @@ export default class AccountService extends Service {
     },
     signatureLogin: {
       post: '/v1/accounts/login/signature'
+    },
+    login: {
+      post: '/v1/accounts/login'
+    },
+    confirmLogin: {
+      post:  '/v1/accounts/login/confirm'
     },
     reauth: {
       post: '/v1/accounts/reauth'
@@ -58,6 +64,20 @@ export default class AccountService extends Service {
     return this.post('reauth', {}, {
       Authorization: authToken
     }).then(body => new AuthToken(body.data));
+  }
+
+  login(email, passwordHash) {
+    return this.post('login', { email, password_hash: passwordHash })
+      .then(body => new LoginRequest(body.data));
+  }
+
+  confirmLogin(email, passwordHash, verificationMethod, code) {
+    return this.post('confirmLogin', { 
+      email, 
+      password_hash: passwordHash ,
+      verification_method: verificationMethod,
+      verification_code: code
+    }).then(body => new LoginRequest(body.data));
   }
 
   // ----------------------------------------------

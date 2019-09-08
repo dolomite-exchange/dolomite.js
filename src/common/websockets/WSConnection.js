@@ -91,20 +91,16 @@ export default class WSConnection {
    * Send an upstream request up to the websocket
    */
   send(route, action, payload) {
-    const attempt = () => 
-      this.stream.send(JSON.stringify({ route, action, data: payload }));
-
-    return new Promise((resolve, reject) => {
+    const attempt = () => new Promise((resolve, reject) => {
       try {
-        attempt();
-        resolve({ status: 'sent' });
-      } catch(e) { 
-        // Attempt reconnect and try again
-        this.establish().then(() => attempt())
-          .then(() => resolve({ status: 'sent' }))
-          .catch((error) => reject(error))
+        const success = this.stream.send(JSON.stringify({ route, action, data: payload }));
+        resolve({ status: 'sent' })
+      } catch(e) {
+        reject(e)
       }
     });
+
+    return attempt().catch(() => this.establish().then(() => attempt()))
   }
 
   /*

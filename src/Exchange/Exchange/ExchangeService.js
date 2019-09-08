@@ -32,16 +32,16 @@ export default class ExchangeService extends Service {
 
   /////////////////////////
 
-  getInfo() {
-    return this.get('info')
+  getInfo(address) {
+    this.infoWatchAddress = address;
+    return this.get('info', { wallet_address: address })
       .then(body => new ExchangeInfo(body.data));
   }
 
   onUpdateInfo(callback) {
-    if (!this.infoWS) this.infoWS = new WSWrapper(() => {
-      return this.getInfo(); 
-    }, 30); // update exchange info every 30s
-
+    if (!this.infoWS) {
+      this.infoWS = new WSWrapper(() => this.getInfo(this.infoWatchAddress), 30); // update exchange info every 30s
+    }
     this.infoWS.subscribe(callback);
   }
 

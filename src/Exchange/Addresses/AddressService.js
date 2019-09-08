@@ -26,16 +26,27 @@ export default class AddressService extends Service {
   /////////////////////////
 
   async watch(ownerAddress, depositAddress) {
-    if (this.watchAddress && this.watchAddress !== ownerAddress) {
-      await this.send('/v1/watch-wallet', 'unsubscribe', {
-        address: this.watchAddress
-      })
+    if (!depositAddress) depositAddress = ownerAddress;
+
+    if (this.watched && this.watched.ownerAddress !== ownerAddress) {
+      await Promise.all([
+        this.send('/v1/addresses/-address-/info', 'unsubscribe', { address: this.watched.ownerAddress }),
+        this.send('/v1/orders/addresses/-address-', 'unsubscribe', { address: this.watched.ownerAddress }),
+        this.send('/v1/orders/addresses/-address-/fills', 'unsubscribe', { address: this.watched.ownerAddress }),
+        this.send('/v1/addresses/-address-/portfolio', 'unsubscribe', { address: this.watched.depositAddress })
+      ]);
     }
 
-    this.watchAddress = ownerAddress;
-    return this.send('/v1/watch-wallet', 'subscribe', {
-      address: ownerAddress
-    })
+    this.watched = { ownerAddress, depositAddress };
+
+    if (!ownerAddress) return new Promise((resolve) => resolve());
+    
+    return Promise.all([
+      this.send('/v1/addresses/-address-/info', 'subscribe', { address: ownerAddress }),
+      this.send('/v1/orders/addresses/-address-', 'subscribe', { address: ownerAddress }),
+      this.send('/v1/orders/addresses/-address-/fills', 'subscribe', { address: ownerAddress }),
+      this.send('/v1/addresses/-address-/portfolio', 'subscribe', { address: depositAddress })
+    ]);
   }
 
   // ----------------------------------------------
@@ -47,19 +58,18 @@ export default class AddressService extends Service {
   }
 
   onPortfolioUpdate(callback) {
-    // TODO: uncomment when supported on backend
-    // return this.on('/v1/addresses/-address-/portfolio', 'update')
-    //   .then(() => {
-    //     this.getPortfolio(this.watchAddress)
-    //       .then(portfolio => callback(portfolio))
-    //   });
+    return this.on('/v1/addresses/-address-/portfolio', 'update')
+      .then(() => {
+        this.getPortfolio(this.watchAddress)
+          .then(portfolio => callback(portfolio))
+      });
 
-    if (!this.portfolioWS) this.portfolioWS = new WSWrapper(() => {
-      if (!this.watchAddress) return null;
-      return this.getPortfolio(this.watchAddress); 
-    }, 15); // update balances every 15s
+    // if (!this.portfolioWS) this.portfolioWS = new WSWrapper(() => {
+    //   if (!this.watchAddress) return null;
+    //   return this.getPortfolio(this.watchAddress); 
+    // }, 15); // update balances every 15s
 
-    this.portfolioWS.subscribe(callback);
+    // this.portfolioWS.subscribe(callback);
   }
 
   // ----------------------------------------------

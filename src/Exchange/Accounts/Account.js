@@ -7,7 +7,8 @@ import AuthToken from './Verification/AuthToken';
 export default class Account {
   constructor({ account_gateway_status, current_verification_tier_number, 
     dolomite_account_id, failed_upgrading_to_verification_tier_number, 
-    limits, upgrading_to_verification_tier_number, is_fiat_gateway_available, wallet }) {
+    limits, upgrading_to_verification_tier_number, is_fiat_gateway_available, wallet,
+    is_native_tier_3_supported, is_external_account_linked, is_external_account_tier_3_supported }) {
     
     const { 
       daily_filled_trade_amount_usd,
@@ -19,6 +20,7 @@ export default class Account {
     const {
       deposit_wallet_address,
       is_smart_wallet_address,
+      is_deposit_contract_created,
       wallet_address,
       wallet_type
     } = wallet || {};
@@ -26,12 +28,16 @@ export default class Account {
     this.id = dolomite_account_id;
     this.address = wallet_address;
     this.depositAddress = deposit_wallet_address;
+    this.isDepositContractCreated = is_deposit_contract_created;
     this.addresses = [wallet_address];
     this.isSmartWallet = is_smart_wallet_address;
     this.walletType = wallet_type;
     this.isManaged = wallet_type === 'MANAGED';
-    this.isResidenceSupported = true; //is_residence_in_supported_region;
+    this.isResidenceSupported = true;
     this.isFiatGatewayAvailable = is_fiat_gateway_available;
+    this.isNativeTier3Supported = is_native_tier_3_supported;
+    this.isExternalLinkSupported = is_external_account_tier_3_supported;
+    this.isWyreLinked = is_external_account_linked;
 
     this.approvalStatus = account_gateway_status;
     this.tier = current_verification_tier_number;

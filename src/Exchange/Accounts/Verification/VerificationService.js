@@ -25,6 +25,9 @@ export default class VerificationService extends AuthService {
       post: '/v1/accounts/:account_id/upgrade/tier3',
       prepare: '/v1/accounts/:account_id/upgrade/tier3/prepare/:address'
     },
+    linkWyre: {
+      post: '/v1/accounts/:account_id/upgrade/wyre-external/submit'
+    },
     tier4: {
       post: '/v1/accounts/:account_id/upgrade/tier4',
       prepare: '/v1/accounts/:account_id/upgrade/tier4/prepare/:address'
@@ -92,16 +95,10 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Tier 2 Upgrade
 
-  prepareUpgradeToTier2({ address, accountId }) {
-    return this.prepare('tier2', { address, account_id: accountId })
-      .then(body => new PrepareMessage(body.data));
-  }
+  upgradeToTier2({ phoneNumber, extensionNumber, verificationCode, phoneVerificationSignature,
+    streetAddress, secondaryStreetAddress, city, zip, stateCode, countryCode }) {
 
-  upgradeToTier2({ accountId, phoneNumber, extensionNumber, verificationCode, phoneVerificationSignature,
-    streetAddress, secondaryStreetAddress, city, zip, stateCode, countryCode, signature, prepareId }) {
-
-    return this.post('tier2', {
-      account_id: accountId,
+    return this.requiresWyreSession('tier2').post('tier2', { 
       phone_verification_signature: phoneVerificationSignature,
       phone_number: phoneNumber,
       extension_number: parseInt(extensionNumber),
@@ -112,30 +109,24 @@ export default class VerificationService extends AuthService {
       state_code: stateCode,
       postal_code: zip,
       country_code: countryCode,
-      auth_signature: signature,
-      prepare_id: prepareId,
     });
   }
 
   // ----------------------------------------------
   // Tier 3 Upgrade
 
-  prepareUpgradeToTier3({ address, accountId }) {
-    return this.prepare('tier3', { address, account_id: accountId })
-      .then(body => new PrepareMessage(body.data));
-  }
-
-  upgradeToTier3({ accountId, ssn, signature, prepareId }) {
-    return this.post('tier3', {
-      account_id: accountId,
+  upgradeToTier3({ ssn }) {
+    return this.requiresWyreSession('tier3').post('tier3', {
       social_security_number: ssn,
-      auth_signature: signature,
-      prepare_id: prepareId,
     });
   }
 
+  linkExternalAccount(wyreSecret) {
+    return this.requiresAuth.post('linkWyre', { wyre_secret_key: wyreSecret });
+  }
+
   // ----------------------------------------------
-  // Tier 3 Upgrade
+  // Tier 4 Upgrade
 
   prepareUpgradeToTier4({ address, accountId }) {
     return this.prepare('tier4', { address, account_id: accountId })
@@ -179,25 +170,8 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Change Email
 
-  // prepareChangeEmail({ address, accountId }) {
-  //   return this.prepare('changeEmail', { address, account_id: accountId })
-  //     .then(body => new PrepareMessage(body.data));
-  // }
-
-  changeEmail(email, /*{ address, accountId, email, signature, prepareId }*/) {
+  changeEmail(email) {
     return this.requiresWyreSession('changeEmail').post('changeEmail', { email });
-    
-    // return this.post('changeEmail', {
-    //   account_id: accountId,
-    //   email: email,
-    //   auth_signature: signature,
-    //   prepare_id: prepareId,
-
-    //   // TODO: remove these when backend fixes this route to remove
-    //   // deprecated required fields
-    //   wallet_address: '0x0000000000000000000000000000000000000000', 
-    //   timestamp: Date.now(),
-    // });
   }
 
   // ----------------------------------------------

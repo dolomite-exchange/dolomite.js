@@ -7,6 +7,7 @@ import PrepareMessage from './Verification/PrepareMessage';
 
 import VerificationService from './Verification/VerificationService';
 import GatewayService from './Gateway/GatewayService';
+import SmartWalletService from './SmartWallet/SmartWalletService';
 
 export default class AccountService extends Service {
 
@@ -33,11 +34,13 @@ export default class AccountService extends Service {
     Account,
     ...VerificationService.exports, // sub-services cannot export directly
     ...GatewayService.exports,
+    ...SmartWalletService.exports,
   };
 
   static services = {
     verification: VerificationService,
-    gateway: GatewayService
+    gateway: GatewayService,
+    smartWallet: SmartWalletService,
   };
 
   /////////////////////////

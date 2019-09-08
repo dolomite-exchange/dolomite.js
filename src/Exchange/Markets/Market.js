@@ -10,7 +10,7 @@ const toToken = (t) => isObject(t) ? new Token(t) : t;
 export default class Market {
   constructor({market, primary_token, secondary_token, metric_period, period_high, 
     period_low, period_amount, period_volume, period_change, current_price, last_price_traded,
-    current_high, current_low, is_margin_trading_enabled, margin_trading_details }) {
+    current_high, current_low, is_margin_trading_enabled, margin_trading_details, period_volume_usd }) {
     
     this.market = market;
     this.primaryToken = toToken(primary_token);
@@ -22,6 +22,7 @@ export default class Market {
     this.lowestAsk = new BigNumber(current_low);
     this.volumePrimaryToken = new BigNumber(period_amount);
     this.volumeSecondaryToken = new BigNumber(period_volume);
+    this.volumeUsd = new BigNumber(period_volume_usd);
     this.changePeriod = {
       highPrice: new BigNumber(period_high),
       lowPrice: new BigNumber(period_low),

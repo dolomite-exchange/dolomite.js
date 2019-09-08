@@ -51,8 +51,12 @@ class Exchange extends Package {
     return this.exchange.onGasPriceUpdate(callback);
   }
 
-  getInfo() {
-    return this.exchange.getInfo();
+  getInfo(address) {
+    return this.exchange.getInfo(address);
+  }
+
+  onUpdateInfo(callback) {
+    return this.exchange.onUpdateInfo(callback);
   }
 
   isUnsupportedRegion() {

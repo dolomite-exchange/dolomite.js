@@ -22,7 +22,8 @@ export default class Account {
       is_smart_wallet_address,
       is_deposit_contract_created,
       wallet_address,
-      wallet_type
+      wallet_type,
+      broker_address
     } = wallet || {};
 
     this.id = dolomite_account_id;
@@ -31,6 +32,7 @@ export default class Account {
     this.isDepositContractCreated = is_deposit_contract_created;
     this.addresses = [wallet_address];
     this.isSmartWallet = is_smart_wallet_address;
+    this.brokerAddress = broker_address;
     this.walletType = wallet_type;
     this.isManaged = wallet_type === 'MANAGED';
     this.isResidenceSupported = true;

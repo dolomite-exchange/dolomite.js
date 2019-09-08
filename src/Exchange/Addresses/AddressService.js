@@ -25,19 +25,20 @@ export default class AddressService extends Service {
 
   /////////////////////////
 
-  async watch(ownerAddress, depositAddress) {
-    if (!depositAddress) depositAddress = ownerAddress;
-
+  async watch(ownerAddress, brokerAddress) {
     if (this.watched && this.watched.ownerAddress !== ownerAddress) {
       await Promise.all([
         this.send('/v1/addresses/-address-/info', 'unsubscribe', { address: this.watched.ownerAddress }),
         this.send('/v1/orders/addresses/-address-', 'unsubscribe', { address: this.watched.ownerAddress }),
         this.send('/v1/orders/addresses/-address-/fills', 'unsubscribe', { address: this.watched.ownerAddress }),
-        this.send('/v1/addresses/-address-/portfolio', 'unsubscribe', { address: this.watched.depositAddress })
+        this.send('/v1/addresses/-address-/portfolio', 'unsubscribe', { 
+          address: this.watched.ownerAddress,
+          broker_address: this.watched.brokerAddress 
+        })
       ]);
     }
 
-    this.watched = { ownerAddress, depositAddress };
+    this.watched = { ownerAddress, brokerAddress };
 
     if (!ownerAddress) return new Promise((resolve) => resolve());
     
@@ -45,31 +46,35 @@ export default class AddressService extends Service {
       this.send('/v1/addresses/-address-/info', 'subscribe', { address: ownerAddress }),
       this.send('/v1/orders/addresses/-address-', 'subscribe', { address: ownerAddress }),
       this.send('/v1/orders/addresses/-address-/fills', 'subscribe', { address: ownerAddress }),
-      this.send('/v1/addresses/-address-/portfolio', 'subscribe', { address: depositAddress })
+      this.send('/v1/addresses/-address-/portfolio', 'subscribe', { 
+        address: ownerAddress,
+        broker_address: brokerAddress 
+      })
     ]);
   }
 
   // ----------------------------------------------
   // Portfolio
 
-  getPortfolio(address) {
-    return this.get('portfolio', { address })
+  getPortfolio(ownerAddress, brokerAddress) {
+    return this.get('portfolio', { address: ownerAddress, broker_address: brokerAddress })
       .then(body => Balance.hydrate(body.data, body.global_objects));
   }
 
   onPortfolioUpdate(callback) {
-    return this.on('/v1/addresses/-address-/portfolio', 'update')
+    this.on('/v1/addresses/-address-/portfolio', 'update')
       .then(() => {
-        this.getPortfolio(this.watchAddress)
+        this.getPortfolio(this.watched.ownerAddress, this.watched.brokerAddress)
           .then(portfolio => callback(portfolio))
       });
 
-    // if (!this.portfolioWS) this.portfolioWS = new WSWrapper(() => {
-    //   if (!this.watchAddress) return null;
-    //   return this.getPortfolio(this.watchAddress); 
-    // }, 15); // update balances every 15s
+    // TODO: remove this when portfolio ws is more stable
+    if (!this.portfolioWS) this.portfolioWS = new WSWrapper(() => {
+      if (!this.watched.ownerAddress) return null;
+      return this.getPortfolio(this.watched.ownerAddress, this.watched.brokerAddress); 
+    }, 15); // update balances every 15s
 
-    // this.portfolioWS.subscribe(callback);
+    this.portfolioWS.subscribe(callback);
   }
 
   // ----------------------------------------------

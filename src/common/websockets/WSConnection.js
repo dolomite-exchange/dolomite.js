@@ -19,20 +19,14 @@ export default class WSConnection {
     };
 
     this.stream.onclose = () => {
-      console.log('Disconnected to webscoket')
-      this.establish()
-        .then(() => {
-          console.log('Reconnected to webscoket');
-          const callbacks = this.subscribers['reconnect'] || [];
-          callbacks.forEach(cb => { try { cb() } catch (e) { } })
-        })
-        .catch((e) => {
-          console.error('Failed to reconnect to websocket: ' + e)
-        })
+      this.reestablish();
     }
 
     if (!this.pingInterval) this.pingInterval = setInterval(() => {
       this.stream && this.send(null, 'ping')
+      if (this.stream.readyState === WebSocket.CLOSED) {
+        this.reestablish();
+      }
     }, 15000);
   }
 
@@ -59,6 +53,19 @@ export default class WSConnection {
         resolve({ status: 'connected' });
       };
     });
+  }
+
+  reestablish() {
+    console.log('Disconnected to webscoket')
+    this.establish()
+      .then(() => {
+        console.log('Reconnected to webscoket');
+        const callbacks = this.subscribers['reconnect'] || [];
+        callbacks.forEach(cb => { try { cb() } catch (e) { } })
+      })
+      .catch((e) => {
+        console.error('Failed to reconnect to websocket: ' + e)
+      })
   }
 
   isConnected() {

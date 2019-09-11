@@ -58,19 +58,35 @@ export default class AddressService extends Service {
 
   getPortfolio(ownerAddress, brokerAddress) {
     return this.get('portfolio', { address: ownerAddress, broker_address: brokerAddress })
-      .then(body => Balance.hydrate(body.data, body.global_objects));
+      .then(body => {
+        this.portfolioGlobals = body.global_objects;
+        return Balance.hydrate(body.data, body.global_objects)
+      });
   }
 
   onPortfolioUpdate(callback) {
     this.on('/v1/addresses/-address-/portfolio', 'update')
-      .then(() => {
-        this.getPortfolio(this.watched.ownerAddress, this.watched.brokerAddress)
-          .then(portfolio => callback(portfolio))
+      .then((data) => {
+        const fetchPortfolio = () => {
+          const { ownerAddress, brokerAddress } = this.watched || {};
+          this.getPortfolio(ownerAddress, brokerAddress)
+            .then(portfolio => callback(portfolio))
+        };
+
+        if (this.portfolioGlobals) {
+          try {
+            callback(Balance.hydrate(data, this.portfolioGlobals));
+          } catch(e) {
+            fetchPortfolio();
+          }
+        } else {
+          fetchPortfolio();
+        }
       });
 
     // TODO: remove this when portfolio ws is more stable
     if (!this.portfolioWS) this.portfolioWS = new WSWrapper(() => {
-      if (!this.watched.ownerAddress) return null;
+      if (!this.watched || !this.watched.ownerAddress) return null;
       return this.getPortfolio(this.watched.ownerAddress, this.watched.brokerAddress); 
     }, 15); // update balances every 15s
 

@@ -9,7 +9,7 @@ export default class ExchangeInfo {
     maker_fee_percentage, max_number_of_taker_matches_per_order, min_usd_maker_trade_amount, 
     min_usd_taker_trade_amount, server_time, taker_fee_percentage, smart_wallet_broker, time_zone,
     create_deposit_contract_fee_amounts, margin_trading_fee_premium_amounts, deposit_contract_registry_address,
-    smart_wallet_transfer_fee_amounts }) {
+    spot_trading_fee_premium_amounts, smart_wallet_transfer_fee_amounts }) {
     
     this.loopringContractAddress = loopring_contract_address;
     this.loopringDelegateAddress = loopring_delegate_address;
@@ -28,5 +28,6 @@ export default class ExchangeInfo {
     this.feeForDepositContractCreation = BigNumber.mapped(create_deposit_contract_fee_amounts);
     this.feeForSmartWalletTransfer = BigNumber.mapped(smart_wallet_transfer_fee_amounts);
     this.premiumForMarginTrade = BigNumber.mapped(margin_trading_fee_premium_amounts);
+    this.premiumForSpotTrade = BigNumber.mapped(spot_trading_fee_premium_amounts);
   }
 }

@@ -43,6 +43,9 @@ export default class VerificationService extends AuthService {
       get: '/v1/accounts/:account_id/upgrade/missing-fields',
       post: '/v1/accounts/:account_id/upgrade/missing-fields',
       prepare: '/v1/accounts/:account_id/upgrade/missing-fields/prepare/:address'
+    },
+    recover: {
+      post: '/v1/accounts/recovery'
     }
   };
 
@@ -53,7 +56,27 @@ export default class VerificationService extends AuthService {
   };
 
   /////////////////////////
-  
+
+  // ----------------------------------------------
+  // Account Recovery
+
+  getRecoverAccountSignatureMessage() {
+    const timestamp = Date.now();
+    const message = `Account Recovery on Dolomite. Code: ${timestamp}`;
+    return { message, timestamp };
+  }
+
+  recoverAccount({ address, passwordHash, encryptedPrivateKey, encryptedMnemonic, timestamp, signature }) {
+    return this.post('recover', {
+      password_hash: passwordHash,
+      wallet_address: address,
+      encrypted_private_key: encryptedPrivateKey,
+      encrypted_mnemonic: encryptedMnemonic,
+      timestamp: timestamp,
+      auth_signature: signature
+    });
+  }
+
   // ----------------------------------------------
   // Account Repair
 

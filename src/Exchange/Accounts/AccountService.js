@@ -59,7 +59,7 @@ export default class AccountService extends Service {
 
   createAccount({ firstName, lastName, email, dateOfBirth, address, signature, 
     prepareId, prepareMessage, passwordHash, encryptedPrivateKey, encryptedMnemonic,
-    subscribedToMarketing }) {
+    subscribedToMarketing, referralCode }) {
     return this.post('create', {
       first_name: firstName,
       last_name: lastName,
@@ -73,6 +73,7 @@ export default class AccountService extends Service {
       auth_signature: signature,
       prepare_id: prepareId,
       prepare_message: prepareMessage,
+      referral_code: referralCode
     }).then(body => new AuthToken(body.data));
   }
 

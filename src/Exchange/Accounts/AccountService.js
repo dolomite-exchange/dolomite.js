@@ -27,7 +27,7 @@ export default class AccountService extends Service {
     },
     reauth: {
       post: '/v1/accounts/reauth'
-    }
+    },
   };
 
   static exports = {
@@ -44,6 +44,37 @@ export default class AccountService extends Service {
   };
 
   /////////////////////////
+
+  async watch(accountId) {
+    this.smartWallet.watch(accountId);
+  }
+
+  // ----------------------------------------------
+  // Create Account
+
+  prepareCreateAccount(address) {
+    return this.prepare('create', { address })
+      .then(body => new PrepareMessage(body.data));
+  }
+
+  createAccount({ firstName, lastName, email, dateOfBirth, address, signature, 
+    prepareId, prepareMessage, passwordHash, encryptedPrivateKey, encryptedMnemonic,
+    subscribedToMarketing }) {
+    return this.post('create', {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      date_of_birth: dateOfBirth,
+      wallet_address: address,
+      password_hash: passwordHash,
+      encrypted_private_key: encryptedPrivateKey,
+      encrypted_mnemonic: encryptedMnemonic,
+      is_subscribed_to_marketing: subscribedToMarketing,
+      auth_signature: signature,
+      prepare_id: prepareId,
+      prepare_message: prepareMessage,
+    }).then(body => new AuthToken(body.data));
+  }
 
   // ----------------------------------------------
   // Login
@@ -81,32 +112,5 @@ export default class AccountService extends Service {
       verification_method: verificationMethod,
       verification_code: code
     }).then(body => new LoginRequest(body.data));
-  }
-
-  // ----------------------------------------------
-  // Create Account
-
-  prepareCreateAccount(address) {
-    return this.prepare('create', { address })
-      .then(body => new PrepareMessage(body.data));
-  }
-
-  createAccount({ firstName, lastName, email, dateOfBirth, address, signature, 
-    prepareId, prepareMessage, passwordHash, encryptedPrivateKey, encryptedMnemonic,
-    subscribedToMarketing }) {
-    return this.post('create', {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      date_of_birth: dateOfBirth,
-      wallet_address: address,
-      password_hash: passwordHash,
-      encrypted_private_key: encryptedPrivateKey,
-      encrypted_mnemonic: encryptedMnemonic,
-      is_subscribed_to_marketing: subscribedToMarketing,
-      auth_signature: signature,
-      prepare_id: prepareId,
-      prepare_message: prepareMessage,
-    }).then(body => new AuthToken(body.data));
   }
 }

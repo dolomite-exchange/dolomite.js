@@ -1,5 +1,7 @@
 import Service from '../../../common/Service';
 
+import SmartWalletTransfer from './SmartWalletTransfer';
+
 export default class SmartWalletService extends Service {
 
   static routes = {
@@ -10,12 +12,16 @@ export default class SmartWalletService extends Service {
       post: '/v1/accounts/:account_id/smart-wallet/deposit-contracts'
     },
     transfers: {
-      post: '/v1/accounts/:account_id/smart-wallet/transfers'
+      post: '/v1/accounts/:account_id/smart-wallet/transfers',
+      get: '/v1/accounts/:account_id/smart-wallet/transfers'
     },
+    pendingTransfers: {
+      get: '/v1/accounts/:account_id/smart-wallet/transfers/pending'
+    }
   };
 
   static exports = {
-    
+    SmartWalletTransfer
   };
 
   /////////////////////////
@@ -67,5 +73,29 @@ export default class SmartWalletService extends Service {
       ecdsa_signature: signature,
       request_hash: requestHash
     }).then(body => body.data.transaction_hash);
+  }
+
+  getTransfers(accountId) {
+    return this.get('transfers', { account_id: accountId }).then(body => SmartWalletTransfer.build(body.data));
+  }
+
+  getPendingTransfers(accountId) {
+    return this.get('pendingTransfers', { account_id: accountId }).then(body => SmartWalletTransfer.build(body.data, true));
+  }
+
+  async watch(accountId) {
+    if (this.watchedAccountId && this.watchedAccountId !== accountId) {
+      await this.send('/v1/accounts/-account-id-/smart-wallet/transfers', 'unsubscribe', { dolomite_account_id: this.watchedAccountId })
+    }
+
+    this.watchedAccountId = accountId;
+    if (!accountId) return new Promise((resolve) => resolve());
+    
+    await this.send('/v1/accounts/-account-id-/smart-wallet/transfers', 'subscribe', { dolomite_account_id: this.accountId })
+  }
+
+  onTransferUpdate(callback) {
+    this.on('/v1/accounts/-account-id-/smart-wallet/transfers', 'update')
+      .then(callback)
   }
 }

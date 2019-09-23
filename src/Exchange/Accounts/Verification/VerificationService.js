@@ -144,8 +144,8 @@ export default class VerificationService extends AuthService {
     });
   }
 
-  linkExternalAccount(wyreSecret) {
-    return this.requiresAuth.post('linkWyre', { wyre_secret_key: wyreSecret });
+  linkExternalAccount(accountId, wyreSecret) {
+    return this.requiresAuth.post('linkWyre', { account_id: accountId, wyre_secret_key: wyreSecret });
   }
 
   // ----------------------------------------------
@@ -161,7 +161,7 @@ export default class VerificationService extends AuthService {
    * as in not as { v, r, s } but as a single hexadecimal (0x...). This is because this
    * route uses multipart form data, and that does not support nested params
    */
-  upgradeToTier4({ accountId, plaidToken, primaryImage, secondaryImage, flatSignature, prepareId }) {
+  upgradeToTier4({ accountId, plaidToken, primaryImage, secondaryImage, flatSignature, prepareId, prepareMessage }) {
     return this.formDataRequest('post', 'tier4', {
       account_id: accountId,
       plaid_public_token: plaidToken,
@@ -169,6 +169,7 @@ export default class VerificationService extends AuthService {
       secondary_identification_document: secondaryImage,
       flattened_auth_signature: flatSignature,
       prepare_id: prepareId,
+      prepare_message: prepareMessage
     });
   }
 

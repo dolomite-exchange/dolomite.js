@@ -1,6 +1,6 @@
 import Service from '../../common/Service';
 
-import Account, { LoginRequest } from './Account';
+import Account, { LoginRequest, VerificationState } from './Account';
 import AuthToken from './Verification/AuthToken';
 import SignatureData from './Verification/SignatureData';
 import PrepareMessage from './Verification/PrepareMessage';
@@ -32,6 +32,7 @@ export default class AccountService extends Service {
 
   static exports = {
     Account,
+    VerificationState,
     ...VerificationService.exports, // sub-services cannot export directly
     ...GatewayService.exports,
     ...SmartWalletService.exports,

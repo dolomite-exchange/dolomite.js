@@ -92,7 +92,7 @@ export default class VerificationService extends AuthService {
 
   repairAccount({ accountId, firstName, lastName, dateOfBirth, streetAddress, 
     secondaryStreetAddress, city, zip, stateCode, countryCode, ssn, plaidToken, 
-    primaryImage, secondaryImage, proofOfAddress, flatSignature, prepareId }) {
+    primaryImage, secondaryImage, proofOfAddress, flatSignature, prepareId, prepareMessage }) {
 
     return this.formDataRequest('post', 'missing', {
       account_id: accountId,
@@ -112,6 +112,7 @@ export default class VerificationService extends AuthService {
       proof_of_address_document: proofOfAddress,
       flattened_auth_signature: flatSignature,
       prepare_id: prepareId,
+      prepare_message: prepareMessage
     });
   }
 

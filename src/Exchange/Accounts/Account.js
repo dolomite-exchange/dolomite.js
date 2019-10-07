@@ -51,6 +51,7 @@ export default class Account {
     this.address = wallet_address;
     this.addresses = [wallet_address];
     this.metadata = account_metadata || {};
+    this.isCreated = true;
 
     this.isSmartWallet = is_smart_wallet_address;
     this.depositAddress = deposit_wallet_address;
@@ -78,6 +79,31 @@ export default class Account {
    
     this.dailyLimit = (new BigNumber(daily_max_trade_amount_usd)).amount;
     this.dailyUsage = (new BigNumber(daily_used_trade_amount_usd)).amount;
+  }
+
+  static generate(walletAddress, tier = 4) {
+    const account = new Account({
+      dolomite_account_id: null, 
+      wallet: {
+        deposit_wallet_address: null,
+        is_smart_wallet_address: false,
+        is_deposit_contract_created: false,
+        wallet_address: walletAddress,
+        wallet_type: 'UNMANAGED',
+        broker_address: null
+      },
+      limits: {},
+      account_metadata: {},
+      current_verification_tier_number: tier,
+      upgrading_to_verification_tier_number: null,
+      account_gateway_status: 'STANDBY',
+      failed_upgrading_to_verification_tier_number: null,
+      supported_fiat_providers: [],
+      linked_fiat_providers: []
+    });
+
+    account.isCreated = false;
+    return account;
   }
 
   get verificationState() {

@@ -21,7 +21,7 @@ export default class ExchangeService extends Service {
       get: '/v1/estimate-gas'
     },
     unsupportedRegion: {
-      get: '/v1/kyc/is-unsupported-region'
+      get: '/v1/compliance/geolocation'
     }
   };
 

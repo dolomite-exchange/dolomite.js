@@ -16,6 +16,9 @@ export default class AccountService extends Service {
       post: '/v1/accounts/create',
       prepare: '/v1/accounts/create/prepare/:address',
     },
+    createInternational: {
+      post: '/v1/accounts/create-international'
+    },
     signatureLogin: {
       post: '/v1/accounts/login/signature'
     },
@@ -76,6 +79,15 @@ export default class AccountService extends Service {
       prepare_message: prepareMessage,
       referral_code: referralCode
     }).then(body => new AuthToken(body.data));
+  }
+  
+  createInternationalUnmanagedAccount({ address, messageHash, signature, referralCode }) {
+    return this.post('createInternational', {
+      wallet_address: address,
+      message_hash: messageHash,
+      ecdsa_signature: signature,
+      referral_code: referralCode
+    }).then(({ headers }) => { console.log(headers); return new AuthToken(headers.Authorization) });
   }
 
   // ----------------------------------------------

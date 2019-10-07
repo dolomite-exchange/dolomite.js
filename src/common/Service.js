@@ -245,11 +245,14 @@ export default class Service {
       return this.fetch(url, fetchOptions)
         .then((response) => {
           try {
+            const headers = response.headers;
+
             if (response.status >= 200 && response.status < 300) {
               return response.json().then(body => ({ 
                 ...body,
                 data: body.data,
                 globals: body.global_objects,
+                headers: headers
               }));
             }
           } catch(e) {

@@ -17,6 +17,9 @@ export default class AddressService extends Service {
     orders: {
       get: '/v1/orders/addresses/:address'
     },
+    marginInfo: {
+      get: '/v1/addresses/:address/margin-info'
+    }
   };
 
   static exports = {
@@ -96,9 +99,14 @@ export default class AddressService extends Service {
   // ----------------------------------------------
   // Account
 
-  getAccount(address) {
-    return this.get('info', { address })
-      .then(body => new Account(body.data));
+  getMarginInfo(address) {
+    return this.get('marginInfo', { address }).then(body => body.data);
+  }
+
+  async getAccount(address) {
+    const marginInfo = await this.getMarginInfo(address)
+    const accountInfo = await this.get('info', { address }).then(body => body.data);
+    return new Account({ ...accountInfo, margin_details: marginInfo });
   }
 
   onAccountUpdate(callback) {

@@ -29,7 +29,7 @@ export default class Account {
   constructor({ dolomite_account_id, wallet, limits, account_metadata,
     current_verification_tier_number, upgrading_to_verification_tier_number,
     account_gateway_status, failed_upgrading_to_verification_tier_number,
-    supported_fiat_providers, linked_fiat_providers }) {
+    supported_fiat_providers, linked_fiat_providers, margin_details }) {
     
     const { 
       daily_filled_trade_amount_usd,
@@ -47,11 +47,16 @@ export default class Account {
       broker_address
     } = wallet || {};
 
+    const {
+      is_local_operator_set
+    } = margin_details || {};
+
     this.id = dolomite_account_id;
     this.address = wallet_address;
     this.addresses = [wallet_address];
     this.metadata = account_metadata || {};
     this.isCreated = true;
+    this.isMarginTradingEnabled = is_local_operator_set;
 
     this.isSmartWallet = is_smart_wallet_address;
     this.depositAddress = deposit_wallet_address;

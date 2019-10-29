@@ -34,8 +34,12 @@ export default class Market {
     
     this.isMarginTradingEnabled = is_margin_trading_enabled;
     this.marginTradingDetails = {
-      primaryMarketId: margin_trading_details.primary_market_id,
-      secondaryMarketId: margin_trading_details.secondary_market_id
+      primaryMarketId: margin_trading_details.primary_token_id,
+      secondaryMarketId: margin_trading_details.secondary_token_id,
+      primaryBorrowRate: margin_trading_details.primary_token_borrow_interest_rate,
+      secondaryBorrowRate: margin_trading_details.secondary_token_borrow_interest_rate,
+      liquidationCollateralization: margin_trading_details.liquidation_collateralization,
+      minOpenCollateralization: margin_trading_details.minimum_open_collateralization,
     };
 
     // Deprecated

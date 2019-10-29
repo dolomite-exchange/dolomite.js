@@ -25,6 +25,9 @@ export default class OrderService extends Service {
     },
     prepareOrders: {
       post: '/v1/orders/prepare'
+    },
+    createMarginOrder: {
+      post: '/v1/margin-positions/open'
     }
   };
 
@@ -45,6 +48,10 @@ export default class OrderService extends Service {
 
   createOrder(order) {
     return this.post('orders', order)
+  }
+
+  createMarginOrder(order) {
+    return this.post('createMarginOrder', order);
   }
 
   // Send up transaction hash which the order depends on

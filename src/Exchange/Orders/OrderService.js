@@ -3,6 +3,7 @@ import Service from '../../common/Service';
 import Order from './Order';
 import DepthChart from './DepthChart';
 import OrderFill from './OrderFill';
+import Position from './Position';
 
 export default class OrderService extends Service {
 
@@ -28,13 +29,14 @@ export default class OrderService extends Service {
     },
     createMarginOrder: {
       post: '/v1/margin-positions/open'
-    }
+    },
   };
 
   static exports = {
     Order,
     OrderDepthChart: DepthChart,
-    OrderFill
+    OrderFill,
+    Position
   };
 
   /////////////////////////

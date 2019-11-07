@@ -1,6 +1,6 @@
 {
   "name": "dolomite",
-  "version": "0.1.40",
+  "version": "0.1.41",
   "description": "Javascript library for interacting with the Dolomite Exchange & Slate APIs",
   "main": "./lib/index.js",
   "scripts": {

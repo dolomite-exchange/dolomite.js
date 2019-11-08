@@ -35,3 +35,5 @@ export default class OrderFill {
     return fillsJsonArray.map(fill => new OrderFill(fill));
   }
 }
+
+

@@ -87,7 +87,7 @@ export default class AccountService extends Service {
       message_hash: messageHash,
       ecdsa_multi_hash_signature: signature,
       referral_code: referralCode
-    }).then(({ headers }) => { console.log(headers); return new AuthToken(headers.Authorization) });
+    }).then(body => new AuthToken(body.data));
   }
 
   // ----------------------------------------------

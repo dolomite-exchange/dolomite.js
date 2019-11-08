@@ -4,6 +4,7 @@ import WSWrapper from '../../common/websockets/WSWrapper';
 import Account from '../Accounts/Account';
 import Balance, { BalanceInfo } from './Balance';
 import Order from '../Orders/Order';
+import Position from '../Orders/Position';
 
 export default class AddressService extends Service {
 
@@ -17,6 +18,15 @@ export default class AddressService extends Service {
     orders: {
       get: '/v1/orders/addresses/:address'
     },
+    marginInfo: {
+      get: '/v1/addresses/:address/margin-info'
+    },
+    openPositions: {
+      get: '/v1/margin-positions/addresses/:address/open'
+    },
+    closedPositions: {
+      get: '/v1/margin-positions/addresses/:address/closed'
+    }
   };
 
   static exports = {
@@ -31,6 +41,7 @@ export default class AddressService extends Service {
         this.send('/v1/addresses/-address-/info', 'unsubscribe', { address: this.watched.ownerAddress }),
         this.send('/v1/orders/addresses/-address-', 'unsubscribe', { address: this.watched.ownerAddress }),
         this.send('/v1/orders/addresses/-address-/fills', 'unsubscribe', { address: this.watched.ownerAddress }),
+        this.send('/v1/margin-positions/addresses/-address-', 'unsubscribe', { address: this.watched.ownerAddress }),
         this.send('/v1/addresses/-address-/portfolio', 'unsubscribe', { 
           address: this.watched.ownerAddress,
           broker_address: this.watched.brokerAddress 
@@ -46,6 +57,7 @@ export default class AddressService extends Service {
       this.send('/v1/addresses/-address-/info', 'subscribe', { address: ownerAddress }),
       this.send('/v1/orders/addresses/-address-', 'subscribe', { address: ownerAddress }),
       this.send('/v1/orders/addresses/-address-/fills', 'subscribe', { address: ownerAddress }),
+      this.send('/v1/margin-positions/addresses/-address-', 'subscribe', { address: ownerAddress }),
       this.send('/v1/addresses/-address-/portfolio', 'subscribe', { 
         address: ownerAddress,
         broker_address: brokerAddress 
@@ -96,9 +108,14 @@ export default class AddressService extends Service {
   // ----------------------------------------------
   // Account
 
-  getAccount(address) {
-    return this.get('info', { address })
-      .then(body => new Account(body.data));
+  getMarginInfo(address) {
+    return this.get('marginInfo', { address }).then(body => body.data);
+  }
+
+  async getAccount(address) {
+    const marginInfo = await this.getMarginInfo(address)
+    const accountInfo = await this.get('info', { address }).then(body => body.data);
+    return new Account({ ...accountInfo, margin_details: marginInfo });
   }
 
   onAccountUpdate(callback) {
@@ -124,6 +141,23 @@ export default class AddressService extends Service {
   onOrdersFillingUpdate(callback) {
     this.on('/v1/orders/addresses/-address-/fills', 'update')
       .build(data => Order.build(data))
+      .then(callback);
+  }
+
+  // ----------------------------------------------
+  // Positions
+
+  async getPositions(address) {
+    const open = await this.get('openPositions', { address })
+      .then(body => Position.hydrate(body.data, body.global_objects));
+    const closed = await this.get('closedPositions', { address })
+      .then(body => Position.hydrate(body.data, body.global_objects));
+    return [...open, ...closed];
+  }
+
+  onPositionsUpdate(callback) {
+    this.on('/v1/margin-positions/addresses/-address-', 'update')
+      .build(data => Position.build(data))
       .then(callback);
   }
 }

@@ -17,7 +17,8 @@ export default class Order {
     dealt_amount_primary, dealt_amount_secondary, placement_timestamp, expiration_timestamp, fee_amount, dealt_amount_fee,
     fee_usd_at_creation, fee_usd_average, exchange_more_than_amount, exchange_rate, ecdsa_signature,
     margin_split_percentage, proof_of_work_nonce, primary_token, secondary_token, close_timestamp,
-    usd_amount_at_close, usd_fee_at_creation, usd_fee_at_close, market_order_effective_price}) {
+    usd_amount_at_close, usd_fee_at_creation, usd_fee_at_close, market_order_effective_price, 
+    trade_type, margin_order_data }) {
     
     this.id = dolomite_order_id;
     this.orderHash = order_hash;
@@ -28,12 +29,17 @@ export default class Order {
     this.authAddress = auth_address;
     this.type = order_type;
     this.side = order_side;
+    this.tradeType = trade_type;
     this.market = market;
     this.primaryToken = primary_token && new Token(primary_token);
     this.secondaryToken = secondary_token && new Token(secondary_token);
+    this.tokenB = this.side === 'BUY' ? this.primaryToken : this.secondaryToken;
+    this.tokenS = this.side === 'SELL' ? this.primaryToken : this.secondaryToken;
     this.status = order_status;
     this.amount = new BigNumber(primary_amount);
     this.volume = new BigNumber(secondary_amount);
+    this.amountB = this.side === 'BUY' ? this.amount : this.volume;
+    this.amountS = this.side === 'SELL' ? this.amount : this.volume;
     const marketOrderPrice = market_order_effective_price && new BigNumber(market_order_effective_price);
     this.price = marketOrderPrice ? marketOrderPrice.amount : exchange_rate;
     this.dealtAmountPrimary = new BigNumber(dealt_amount_primary);
@@ -59,6 +65,11 @@ export default class Order {
     this.usdAmountAtClose = usd_amount_at_close && new BigNumber(usd_amount_at_close);
     this.usdFeeAtCreation = usd_fee_at_creation && new BigNumber(usd_fee_at_creation);
     this.usdFeeAtClose = usd_fee_at_close && new BigNumber(usd_fee_at_close);
+
+    if (this.tradeType === 'MARGIN') {
+      this.borrowAmountPadded = margin_order_data.deposit_padded_amount;
+      this.marginActionType = margin_order_data.margin_order_type;
+    }
 
     // Deprecated
     this.dolomiteOrderHash = dolomite_order_id;

@@ -30,6 +30,9 @@ export default class OrderService extends Service {
     createMarginOrder: {
       post: '/v1/margin-positions/open'
     },
+    closeMarginOrder: {
+      post: '/v1/margin-positions/:position_id/close'
+    }
   };
 
   static exports = {
@@ -54,6 +57,10 @@ export default class OrderService extends Service {
 
   createMarginOrder(order) {
     return this.post('createMarginOrder', order);
+  }
+
+  closeMarginOrder(order) {
+    return this.post('closeMarginOrder', order);
   }
 
   // Send up transaction hash which the order depends on

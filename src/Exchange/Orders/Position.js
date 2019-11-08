@@ -11,11 +11,11 @@ export default class Position {
     margin_position_type, margin_position_status, held_token, actual_held_amount, 
     actual_borrow_amount, target_held_amount, target_borrow_amount, borrow_token, 
     expiration_timestamp, liquidated_withdrawable_amount, open_order_id, close_order_id, 
-    open_price, open_timestamp, close_timestamp, open_transaction_hash, close_transaction_hash, 
-    collateralization, position_value_usd_amount, position_value_change, 
-    withdrawable_amount, liquidation_price_amount, leverage, actual_deposit_amount, 
+    open_price, open_timestamp, close_timestamp, creation_timestamp, open_transaction_hash, 
+    close_transaction_hash, collateralization, position_value_usd_amount, position_value_change, 
+    withdrawable_amount, actual_liquidation_price_amount, actual_leverage, actual_deposit_amount, 
     target_deposit_amount, deposit_token, target_liquidation_price_amount, target_leverage }) {
-    
+
     this.id = dolomite_position_id;
     this.blockchainId = blockchain_position_id;
     this.owner = owner_address;
@@ -37,27 +37,38 @@ export default class Position {
     this.secondaryTicker = secondaryTicker;
 
     this.positionTicker = this.type === 'LONG' ? primaryTicker : secondaryTicker;
-    this.positionSize = this.type === 'LONG' 
+    this.heldTicker = this.positionTicker;
+    this.borrowTicker = this.type === 'LONG' ? secondaryTicker : primaryTicker;;
+
+    this.targetPositionSize = this.type === 'LONG' 
       ? this.targetHeldAmount 
-      : this.targetHeldAmount.calc(a => a - this.targetDepositAmount.val);
+      : this.targetHeldAmount.calc(a => a - this.targetDepositAmount.value);
+    this.actualPositionSize = this.type === 'LONG' 
+      ? this.heldAmount 
+      : this.heldAmount.calc(a => a - this.depositAmount.value);
+
+    this.fillPercentage = (this.actualPositionSize.amount / this.targetPositionSize.amount) * 100;
+    this.isPartial = this.actualPositionSize.amount > 0 && this.fillPercentage < 95;
 
     this.openPrice = bigToFloat(open_price);
-    this.liquidationPrice = bigToFloat(target_liquidation_price_amount);
-    this.targetLiquidationPrice = bigToFloat(liquidation_price_amount);
+    this.liquidationPrice = bigToFloat(actual_liquidation_price_amount);
+    this.targetLiquidationPrice = bigToFloat(target_liquidation_price_amount);
    
     this.openTimestamp = open_timestamp;
     this.closeTimestamp = close_timestamp;
     this.expirationTimestamp = expiration_timestamp;
     this.remainingDays = Math.max(0, Math.ceil((expiration_timestamp - Date.now()) / 1000 / 60 / 60 / 24));
-    this.lastActionTimestamp = close_timestamp || open_timestamp
+    this.lastActionTimestamp = close_timestamp || open_timestamp || creation_timestamp;
 
-    this.collateralization = collateralization;
-    this.leverage = leverage;
+    this.collateralization = (collateralization || 0) * 100;
+    
+    this.leverage = parseFloat((Math.round((actual_leverage || target_leverage) * 4) / 4).toFixed(2));
+    this.actualLeverage = actual_leverage;
     this.targetLeverage = target_leverage;
 
     this.withdrawableAmount = withdrawable_amount && new BigNumber(withdrawable_amount);
     this.positionValueUsd = position_value_usd_amount && new BigNumber(position_value_usd_amount);
-    this.percentChange = isNaN(position_value_change) ? 0 : position_value_change;
+    this.percentChange = isNaN(position_value_change) ? 0 : position_value_change * 100;
 
     this.openOrderId = open_order_id;
     this.closeOrderId = close_order_id;

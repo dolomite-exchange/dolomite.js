@@ -8,7 +8,9 @@ export default class WSWrapper {
     this.requestCallback = requestCallback;
     this.subscribers = [];
 
-    if (interval > 0) setInterval(() => this.trigger(), interval * 1000);
+    if (interval > 0) {
+      this.intervalId = setInterval(() => this.trigger(), interval * 1000);
+    }
   }
 
   trigger() {
@@ -24,5 +26,10 @@ export default class WSWrapper {
     promise.then(data => {
       this.subscribers.forEach(callback => callback(data));
     }).catch(e => {});
+  }
+
+  kill() {
+    this.subscribers = [];
+    clearInterval(this.intervalId);
   }
 }

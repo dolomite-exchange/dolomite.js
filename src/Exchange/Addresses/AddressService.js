@@ -119,9 +119,22 @@ export default class AddressService extends Service {
   }
 
   onAccountUpdate(callback) {
+    if (!this.accountWS) this.accountWS = new WSWrapper(() => {
+      if (!this.watched || !this.watched.ownerAddress) return null;
+      return this.getAccount(this.watched.ownerAddress).then((acc) => {
+        if (acc.isMarginTradingEnabled) this.accountWS.kill();
+        return acc;
+      }); 
+    }, 15); // update account every 15s
+
+    this.accountWS.subscribe(callback);
+
     return this.on('/v1/addresses/-address-/info', 'update')
-      .build(data => new Account(data))
-      .then(callback)
+      .then(() => {
+        if (this.watched && this.watched.ownerAddress) {
+          return this.getAccount(this.watched.ownerAddress).then((acc) => callback(acc));
+        }
+      })
   }
 
   // ----------------------------------------------

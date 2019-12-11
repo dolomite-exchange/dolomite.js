@@ -67,8 +67,22 @@ export default class Order {
     this.usdFeeAtClose = usd_fee_at_close && new BigNumber(usd_fee_at_close);
 
     if (this.tradeType === 'MARGIN') {
-      this.borrowAmountPadded = margin_order_data.deposit_padded_amount;
-      this.marginActionType = margin_order_data.margin_order_type;
+      this.depositPaddedAmount = new BigNumber(margin_order_data.deposit_padded_amount);
+      this.isMarginOpen = this.depositPaddedAmount === new BigNumber(0);
+      if (margin_order_data.deposit_precisioned_ticker.ticker === this.primaryToken.ticker) {
+        // The user is going LONG
+        this.marginActionType = this.isMarginOpen ? 'CLOSE_LONG' : 'OPEN_LONG';
+        this.leverage = this.isMarginOpen ? this.amountB / this.depositPaddedAmount : new BigNumber(0);
+      } else {
+        this.marginActionType = this.isMarginOpen ? 'CLOSE_SHORT' : 'OPEN_SHORT';
+        this.leverage = this.isMarginOpen ? (this.amountB / this.depositPaddedAmount) - new BigNumber(1) : new BigNumber(0);
+      }
+      this.blockchainMarginPositionId = margin_order_data.margin_position_id;
+    } else {
+      this.depositPaddedAmount = null;
+      this.marginActionType = null;
+      this.leverage = null;
+      this.blockchainMarginPositionId = null;
     }
 
     // Deprecated

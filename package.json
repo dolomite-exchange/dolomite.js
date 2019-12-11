@@ -1,6 +1,6 @@
 {
-  "name": "dolomite",
-  "version": "0.1.43",
+  "name": "@dolomite-exchange/dolomite",
+  "version": "0.1.51",
   "description": "Javascript library for interacting with the Dolomite Exchange & Slate APIs",
   "main": "./lib/index.js",
   "scripts": {
@@ -11,10 +11,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dolomite-exchange/dolomite.js"
+    "url": "git+https://github.com/dolomite-exchange/dolomite.js.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dolomite Team",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dolomite-exchange/dolomite.js/issues"
@@ -43,5 +43,9 @@
     "jest-cli": "^24.7.1",
     "merge-stream": "^1.0.1",
     "lodash.template": ">=4.5.0"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
   }
 }

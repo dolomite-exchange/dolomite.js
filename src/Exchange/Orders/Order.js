@@ -65,11 +65,12 @@ export default class Order {
     this.usdFeeAtCreation = usd_fee_at_creation && new BigNumber(usd_fee_at_creation);
     this.usdFeeAtClose = usd_fee_at_close && new BigNumber(usd_fee_at_close);
 
+    const primaryTicker = this.market.split("-")[0];
     if (this.tradeType === 'MARGIN') {
       const depositPrecisionedTicker = margin_order_data.deposit_precisioned_ticker;
       this.depositPaddedAmount = BigNumber.build(margin_order_data.deposit_padded_amount, depositPrecisionedTicker.precision, depositPrecisionedTicker.ticker);
       this.isMarginOpen = this.depositPaddedAmount.amount !== 0;
-      if (margin_order_data.deposit_precisioned_ticker.ticker === this.primaryToken.ticker) {
+      if (margin_order_data.deposit_precisioned_ticker.ticker === primaryTicker) {
         // The user is going LONG
         this.marginActionType = this.isMarginOpen ? 'OPEN_LONG' : 'CLOSE_LONG';
         this.leverage = this.isMarginOpen ? Math.round((this.amountB.amount + this.depositPaddedAmount.amount) / this.depositPaddedAmount.amount) : 0;

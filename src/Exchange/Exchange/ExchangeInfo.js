@@ -5,14 +5,14 @@ import BigNumber from '../../common/BigNumber';
  */
 export default class ExchangeInfo {
   constructor({ base_spot_trading_fee_amounts, black_listed_email_domains, 
-    fee_collecting_wallet_address, spot_trading_contract_address, loopring_delegate_address,
+    fee_collecting_wallet_address, spot_trade_settlement_contract_address, loopring_delegate_address,
     maker_fee_percentage, max_number_of_taker_matches_per_order, min_usd_maker_trade_amount, 
     min_usd_taker_trade_amount, server_time, taker_fee_percentage, smart_wallet_broker, time_zone,
     create_deposit_contract_fee_amounts, margin_trading_fee_premium_amounts, deposit_contract_registry_address,
     spot_trading_fee_premium_amounts, smart_wallet_transfer_fee_amounts, dydx_solo_contract_address,
     margin_trade_settlement_contract_address }) {
     
-    this.spotTradingContractAddress = spot_trading_contract_address;
+    this.spotTradingContractAddress = spot_trade_settlement_contract_address;
     this.loopringDelegateAddress = loopring_delegate_address;
     this.feeCollectingWalletAddress = fee_collecting_wallet_address;
     this.smartWalletBrokerAddress = smart_wallet_broker;

@@ -42,16 +42,16 @@ class AuthService extends Service {
     };
   };
 
-  withWyreAuth(method, routeName, options) {
+  withWyreAuth(method, routeName, options, useWyreSession) {
     options = { ...DEFAULT_WYRE_OPTIONS, ...options };
     
     const getPrepareMessage = (account_id, address) => 
       this.prepare(routeName, { account_id, address })
-        .then(body => new PrepareMessage(body.data))
+        .then(body => new PrepareMessage(body.data));
 
     return (resource, params, headers = {}) => {
       const callback = () => {
-        return this.getAuthToken(true, getPrepareMessage)
+        return this.getAuthToken(useWyreSession, getPrepareMessage)
           .then(({ token, signature, prepareMessage, address, accountId }) => {
             activeAuthRequest = null;
             signature = (signature && options.flatten) ? signature.signature : signature;
@@ -80,11 +80,11 @@ class AuthService extends Service {
     };
   }
 
-  requiresWyreSession(prepareRouteName, options = {}) {
+  requiresWyreSession(prepareRouteName, options = {}, useWyreSession = true) {
     return {
-      get: this.withWyreAuth(this.get.bind(this), prepareRouteName, options),
-      post: this.withWyreAuth(this.post.bind(this), prepareRouteName, options),
-      prepare: this.withWyreAuth(this.prepare.bind(this), prepareRouteName, options)
+      get: this.withWyreAuth(this.get.bind(this), prepareRouteName, options, useWyreSession),
+      post: this.withWyreAuth(this.post.bind(this), prepareRouteName, options, useWyreSession),
+      prepare: this.withWyreAuth(this.prepare.bind(this), prepareRouteName, options, useWyreSession)
     };
   }
 }

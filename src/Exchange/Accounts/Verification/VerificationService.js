@@ -195,8 +195,11 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Change Email
 
-  changeEmail(email) {
-    return this.requiresWyreSession('changeEmail', {}, false).post('changeEmail', { email });
+  changeEmail(email, accountId) {
+    return this.requiresAuth.post('changeEmail', {
+      email: email,
+      account_id: accountId,
+    });
   }
 
   // ----------------------------------------------

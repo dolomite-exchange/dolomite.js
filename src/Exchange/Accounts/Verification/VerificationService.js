@@ -63,10 +63,10 @@ export default class VerificationService extends AuthService {
   getRecoverAccountSignatureMessage() {
     const timestamp = Date.now();
     const message = `Account Recovery on Dolomite. Code: ${timestamp}`;
-    return { message, timestamp };
+    return {message, timestamp};
   }
 
-  recoverAccount({ address, passwordHash, encryptedPrivateKey, encryptedMnemonic, timestamp, signature }) {
+  recoverAccount({address, passwordHash, encryptedPrivateKey, encryptedMnemonic, timestamp, signature}) {
     return this.post('recover', {
       password_hash: passwordHash,
       wallet_address: address,
@@ -80,19 +80,21 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Account Repair
 
-  getMissingAccountInfo({ accountId }) {
-    return this.requiresAuth.get('missing', { account_id: accountId })
+  getMissingAccountInfo({accountId}) {
+    return this.requiresAuth.get('missing', {account_id: accountId})
       .then(body => body.data);
   }
 
-  prepareRepairAccount({ address, accountId }) {
-    return this.prepare('missing', { address, account_id: accountId })
+  prepareRepairAccount({address, accountId}) {
+    return this.prepare('missing', {address, account_id: accountId})
       .then(body => new PrepareMessage(body.data));
   }
 
-  repairAccount({ accountId, firstName, lastName, dateOfBirth, streetAddress, 
-    secondaryStreetAddress, city, zip, stateCode, countryCode, ssn, plaidToken, 
-    primaryImage, secondaryImage, proofOfAddress, flatSignature, prepareId, prepareMessage }) {
+  repairAccount({
+                  accountId, firstName, lastName, dateOfBirth, streetAddress,
+                  secondaryStreetAddress, city, zip, stateCode, countryCode, ssn, plaidToken,
+                  primaryImage, secondaryImage, proofOfAddress, flatSignature, prepareId, prepareMessage
+                }) {
 
     return this.formDataRequest('post', 'missing', {
       account_id: accountId,
@@ -119,10 +121,12 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Tier 2 Upgrade
 
-  upgradeToTier2({ phoneNumber, extensionNumber, verificationCode, phoneVerificationSignature,
-    streetAddress, secondaryStreetAddress, city, zip, stateCode, countryCode }) {
+  upgradeToTier2({
+                   phoneNumber, extensionNumber, verificationCode, phoneVerificationSignature,
+                   streetAddress, secondaryStreetAddress, city, zip, stateCode, countryCode
+                 }) {
 
-    return this.requiresWyreSession('tier2').post('tier2', { 
+    return this.requiresWyreSession('tier2').post('tier2', {
       phone_verification_signature: phoneVerificationSignature,
       phone_number: phoneNumber,
       extension_number: parseInt(extensionNumber),
@@ -139,21 +143,21 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Tier 3 Upgrade
 
-  upgradeToTier3({ ssn }) {
+  upgradeToTier3({ssn}) {
     return this.requiresWyreSession('tier3').post('tier3', {
       social_security_number: ssn,
     });
   }
 
   linkExternalAccount(accountId, wyreSecret) {
-    return this.requiresAuth.post('linkWyre', { account_id: accountId, wyre_secret_key: wyreSecret });
+    return this.requiresAuth.post('linkWyre', {account_id: accountId, wyre_secret_key: wyreSecret});
   }
 
   // ----------------------------------------------
   // Tier 4 Upgrade
 
-  prepareUpgradeToTier4({ address, accountId }) {
-    return this.prepare('tier4', { address, account_id: accountId })
+  prepareUpgradeToTier4({address, accountId}) {
+    return this.prepare('tier4', {address, account_id: accountId})
       .then(body => new PrepareMessage(body.data));
   }
 
@@ -162,7 +166,7 @@ export default class VerificationService extends AuthService {
    * as in not as { v, r, s } but as a single hexadecimal (0x...). This is because this
    * route uses multipart form data, and that does not support nested params
    */
-  upgradeToTier4({ accountId, plaidToken, primaryImage, secondaryImage, flatSignature, prepareId, prepareMessage }) {
+  upgradeToTier4({accountId, plaidToken, primaryImage, secondaryImage, flatSignature, prepareId, prepareMessage}) {
     return this.formDataRequest('post', 'tier4', {
       account_id: accountId,
       plaid_public_token: plaidToken,
@@ -177,14 +181,14 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Phone Verification
 
-  verifyPhoneNumber({ phoneNumber, extensionNumber }) {
+  verifyPhoneNumber({phoneNumber, extensionNumber}) {
     return this.post('verifyPhone', {
       phone_number: phoneNumber,
       extension_number: parseInt(extensionNumber)
     }).then((body) => body.data)
   }
 
-  verifyPhoneNumberCode({ phoneNumber, extensionNumber, verificationCode }) {
+  verifyPhoneNumberCode({phoneNumber, extensionNumber, verificationCode}) {
     return this.post('verifyPhoneCode', {
       phone_number: phoneNumber,
       extension_number: parseInt(extensionNumber),
@@ -195,17 +199,24 @@ export default class VerificationService extends AuthService {
   // ----------------------------------------------
   // Change Email
 
-  changeEmail(email, accountId) {
-    return this.requiresAuth.post('changeEmail', {
+  changeEmail(email, accountId, shouldUseWyreAuth) {
+    const params = {
       email: email,
       account_id: accountId,
-    });
+    };
+    const changeEmailRoute = 'changeEmail';
+
+    if (shouldUseWyreAuth) {
+      return this.requiresWyreSession(changeEmailRoute).requiresAuth.post(changeEmailRoute, params);
+    } else {
+      return this.requiresAuth.post(changeEmailRoute, params);
+    }
   }
 
   // ----------------------------------------------
   // Resend Email
 
-  resendVerificationEmail({ address, accountId }) {
+  resendVerificationEmail({address, accountId}) {
     return this.requiresAuth.post('resendEmail', {
       wallet_address: address,
       account_id: accountId

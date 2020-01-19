@@ -42,7 +42,7 @@ class AuthService extends Service {
     };
   };
 
-  withWyreAuth(method, routeName, options, useWyreSession) {
+  withWyreAuth(method, routeName, options, useWyreSession, authSignatureKey) {
     options = { ...DEFAULT_WYRE_OPTIONS, ...options };
     
     const getPrepareMessage = (account_id, address) => 
@@ -62,10 +62,12 @@ class AuthService extends Service {
               [options.prepareMessageKey]: prepareMessage && prepareMessage.message,
             };
 
+            const authSignatureObject = authSignatureKey ? {authSignatureKey: authSigParams} : authSigParams;
+
             return method(resource, {
               [options.addressKey]: address,
               [options.accountIdKey]: accountId,
-              ...authSigParams,
+              ...authSignatureObject,
               ...params,
             },{
               ...headers,
@@ -82,9 +84,9 @@ class AuthService extends Service {
 
   requiresWyreSession(prepareRouteName, options = {}, useWyreSession = true) {
     return {
-      get: this.withWyreAuth(this.get.bind(this), prepareRouteName, options, useWyreSession),
-      post: this.withWyreAuth(this.post.bind(this), prepareRouteName, options, useWyreSession),
-      prepare: this.withWyreAuth(this.prepare.bind(this), prepareRouteName, options, useWyreSession)
+      get: this.withWyreAuth(this.get.bind(this), prepareRouteName, options, useWyreSession, options.authSignatureKey),
+      post: this.withWyreAuth(this.post.bind(this), prepareRouteName, options, useWyreSession, options.authSignatureKey),
+      prepare: this.withWyreAuth(this.prepare.bind(this), prepareRouteName, options, useWyreSession, options.authSignatureKey)
     };
   }
 }

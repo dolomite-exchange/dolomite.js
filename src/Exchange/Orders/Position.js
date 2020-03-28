@@ -11,10 +11,11 @@ export default class Position {
     margin_position_type, margin_position_status, held_token, actual_held_amount, 
     actual_borrow_amount, target_held_amount, target_borrow_amount, borrow_token, 
     expiration_timestamp, liquidated_withdrawable_amount, open_order_id, close_order_id, 
-    open_price, open_timestamp, close_timestamp, creation_timestamp, open_transaction_hash, 
+    open_price, close_price, open_timestamp, close_timestamp, creation_timestamp, open_transaction_hash,
     close_transaction_hash, collateralization, position_value_usd_amount, position_value_change, 
     withdrawable_amount, actual_liquidation_price_amount, actual_leverage, actual_deposit_amount, 
-    target_deposit_amount, deposit_token, target_liquidation_price_amount, target_leverage }) {
+    target_deposit_amount, deposit_token, target_liquidation_price_amount, target_leverage,
+    is_liquidated_collateral_withdrawn }) {
 
     this.id = dolomite_position_id;
     this.blockchainId = blockchain_position_id;
@@ -51,6 +52,7 @@ export default class Position {
     this.isPartial = this.actualPositionSize.amount > 0 && this.fillPercentage < 95;
 
     this.openPrice = bigToFloat(open_price);
+    this.closePrice = bigToFloat(close_price);
     this.liquidationPrice = bigToFloat(actual_liquidation_price_amount);
     this.targetLiquidationPrice = bigToFloat(target_liquidation_price_amount);
    
@@ -74,6 +76,8 @@ export default class Position {
     this.closeOrderId = close_order_id;
     this.openTransactionHash = open_transaction_hash;
     this.closeTransactionHash = close_transaction_hash;
+
+    this.isLiquidatedCollateralWithdrawn = is_liquidated_collateral_withdrawn;
   }
 
   static build(positionArray) {

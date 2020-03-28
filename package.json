@@ -1,6 +1,6 @@
 {
   "name": "@dolomite-exchange/dolomite",
-  "version": "0.1.64",
+  "version": "0.1.65",
   "description": "Javascript library for interacting with the Dolomite Exchange & Slate APIs",
   "main": "./lib/index.js",
   "scripts": {
@@ -21,28 +21,28 @@
   },
   "homepage": "https://github.com/dolomite-exchange/dolomite.js#readme",
   "dependencies": {
-    "@babel/polyfill": "^7.4.3",
+    "@babel/polyfill": "^7.8.7",
     "datejs": "^1.0.0-rc3",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.0",
     "object.omit": "^3.0.0",
     "randexp": "^0.4.9",
-    "uuid": "^3.3.2"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/preset-env": "^7.4.3",
-    "babel-jest": "^24.7.1",
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-env": "^7.9.0",
+    "babel-jest": "^24.9.0",
     "del": "^1.1.1",
     "gulp": "^3.8.11",
-    "gulp-babel": "^8.0.0-beta.2",
-    "gulp-jest": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-jest": "^4.0.3",
     "gulp-watch": "^5.0.1",
-    "jest": "^24.7.1",
-    "jest-cli": "^24.7.1",
-    "merge-stream": "^1.0.1",
-    "lodash.template": ">=4.5.0"
+    "jest": "^24.9.0",
+    "jest-cli": "^24.9.0",
+    "lodash.template": ">=4.5.0",
+    "merge-stream": "^1.0.1"
   },
   "directories": {
     "lib": "lib",

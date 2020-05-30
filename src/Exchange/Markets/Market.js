@@ -45,8 +45,7 @@ export default class Market {
     this.isEnabled = is_enabled;
     this.isHidden = is_hidden;
 
-    // Deprecated
-    this.pair = market;
+    this.pair = market; // Deprecated
   }
 
   static build(marketJsonArray) {

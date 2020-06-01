@@ -11,7 +11,7 @@ export default class Market {
   constructor({market, primary_token, secondary_token, metric_period, period_high, 
     period_low, period_amount, period_volume, period_change, current_price, last_price_traded, index_price_usd,
     current_high, current_low, is_margin_trading_enabled, margin_trading_details, period_volume_usd,
-    primary_ticker_decimal_places, secondary_ticker_price_decimal_places }) {
+    primary_ticker_decimal_places, secondary_ticker_price_decimal_places, is_hidden, is_enabled }) {
     
     this.market = market;
     this.primaryToken = toToken(primary_token);
@@ -42,9 +42,10 @@ export default class Market {
       liquidationCollateralization: margin_trading_details.liquidation_collateralization,
       minOpenCollateralization: margin_trading_details.minimum_open_collateralization,
     };
+    this.isEnabled = is_enabled;
+    this.isHidden = is_hidden;
 
-    // Deprecated
-    this.pair = market;
+    this.pair = market; // Deprecated
   }
 
   static build(marketJsonArray) {

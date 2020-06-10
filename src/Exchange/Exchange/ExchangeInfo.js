@@ -10,7 +10,7 @@ export default class ExchangeInfo {
     min_usd_taker_trade_amount, server_time, taker_fee_percentage, smart_wallet_broker, time_zone,
     create_deposit_contract_fee_amounts, margin_trading_fee_premium_amounts, deposit_contract_registry_address,
     spot_trading_fee_premium_amounts, smart_wallet_transfer_fee_amounts, dydx_solo_contract_address,
-    margin_trade_settlement_contract_address }) {
+    margin_trade_settlement_contract_address, dydx_payable_proxy_contract_address}) {
     
     this.spotTradingContractAddress = spot_trade_settlement_contract_address;
     this.loopringDelegateAddress = loopring_delegate_address;
@@ -18,6 +18,7 @@ export default class ExchangeInfo {
     this.smartWalletBrokerAddress = smart_wallet_broker;
     this.depositContractRegistryAddress = deposit_contract_registry_address;
     this.dydxSoloContractAddress = dydx_solo_contract_address;
+    this.dydxPayableProxyContractAddress = dydx_payable_proxy_contract_address;
     this.marginTradingContractAddress = margin_trade_settlement_contract_address;
     this.serverTime = server_time;
     this.timeZone = time_zone;

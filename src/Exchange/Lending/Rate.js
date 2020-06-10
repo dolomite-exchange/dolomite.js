@@ -4,12 +4,13 @@
  */
 
 export default class Rate {
-  constructor({ticker, dydx_token_id, margin_supply_interest_rate, margin_borrow_interest_rate}) {
+  constructor({ticker, dydx_token_id, margin_supply_interest_rate, margin_borrow_interest_rate, token}) {
 
     this.ticker = ticker;
     this.dydxTokenId = dydx_token_id;
     this.supplyInterestRate = margin_supply_interest_rate;
     this.borrowInterestRate = margin_borrow_interest_rate;
+    this.token = token;
   }
 
   static build(ratesAsJson) {

@@ -1,6 +1,6 @@
 {
   "name": "@dolomite-exchange/dolomite",
-  "version": "0.1.72",
+  "version": "0.1.75",
   "description": "Javascript library for interacting with the Dolomite Exchange & Slate APIs",
   "main": "./lib/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   "homepage": "https://github.com/dolomite-exchange/dolomite.js#readme",
   "dependencies": {
     "@babel/polyfill": "^7.8.7",
+    "bn.js": "^5.1.2",
     "datejs": "^1.0.0-rc3",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.0",

@@ -1,4 +1,4 @@
-import * as BN from 'bn.js';
+import BN from 'bn.js';
 const ZERO_RAW = { amount: 0, currency: { precision: 0, display_precision: 0 }};
 
 /*
@@ -17,9 +17,9 @@ export default class BigNumber {
     const { amount, currency } = input || ZERO_RAW;
 
     this.raw = { amount, currency };
-    this.valueBN = new BN(amount);
-    console.log('this.rawValue, amount, typeof amount ', this.rawValue, amount, typeof amount);
-    this.value = amount;
+    this.valueBN = !!amount ? new BN(amount) : new BN('0');
+    this.value = typeof amount === 'string' ? Number.parseFloat(amount) : amount;
+    this.valueString = typeof amount === 'number' ? amount.toLocaleString('en-US', {useGrouping: false}) : amount;
     this.currency = {
       ticker: currency.ticker,
       precision: currency.precision,

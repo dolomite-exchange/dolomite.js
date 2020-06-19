@@ -1,5 +1,6 @@
 import BigNumber from '../../common/BigNumber';
 import Order from './Order';
+import BN from 'bn.js';
 
 const groupBy = (arr, match) => arr.reduce((obj, item) => {
   const key = match(item);
@@ -8,7 +9,7 @@ const groupBy = (arr, match) => arr.reduce((obj, item) => {
   return obj;
 }, {});
 
-const sum = (arr, match) => arr.reduce((total, item) => total + match(item), 0);
+const sum = (arr, match) => arr.reduce((total, item) => total.add(match(item)), new BN('0'));
 const oldestToYoungest = (a, b) => a.creationTimestamp - b.creationTimestamp;
 
 /*
@@ -35,19 +36,19 @@ export class OrderDepth {
   static merge(price, orders) {
     const orderedOrders = orders.sort(oldestToYoungest);
     
-    const totalOpenPrimaryUnpadded = sum(orderedOrders, (order) => order.openAmountPrimary.value);
-    const totalOpenSecondaryUnpadded = sum(orderedOrders, (order) => order.openAmountSecondary.value);
+    const totalOpenPrimaryBN = sum(orderedOrders, (order) => order.openAmountPrimary.valueBN);
+    const totalOpenSecondaryBN = sum(orderedOrders, (order) => order.openAmountSecondary.valueBN);
 
     const primaryCurrency = orders[0].openAmountPrimary.raw.currency;
     const secondaryCurrency = orders[0].openAmountSecondary.raw.currency;
 
     return new OrderDepth({
       primary_amount: {
-        amount: totalOpenPrimaryUnpadded,
+        amount: totalOpenPrimaryBN,
         currency: primaryCurrency
       },
       secondary_amount: {
-        amount: totalOpenSecondaryUnpadded,
+        amount: totalOpenSecondaryBN,
         currency: secondaryCurrency
       },
       exchange_rate: price,

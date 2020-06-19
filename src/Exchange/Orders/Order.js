@@ -1,11 +1,16 @@
 import BigNumber from '../../common/BigNumber';
 import Token from '../Tokens/Token';
+import BN from 'bn.js';
 
 const toFillPercent = (dealt, total) => dealt.amount / total.amount;
-const toOpenAmount = (dealt, total) => new BigNumber({
-  ...total,
-  amount: Math.max(total.amount - dealt.amount, 0)
-});
+const toOpenAmount = (dealt, total) => {
+  const amountBN = (new BN(total.amount)).sub(new BN(dealt.amount));
+  const _0 = new BN('0');
+  return new BigNumber({
+    ...total,
+    amount: amountBN.lt(_0) ? '0' : amountBN.toString(10),
+  })
+};
 
 /*
  * Order model

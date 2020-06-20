@@ -1,6 +1,7 @@
 import BigNumber from '../../common/BigNumber';
 import Token from '../Tokens/Token';
 import BN from 'bn.js';
+import * as Web3 from 'web3-utils';
 
 const toFillPercent = (dealt, total) => dealt.amount / total.amount;
 const toOpenAmount = (dealt, total) => {
@@ -24,6 +25,10 @@ export default class Order {
     margin_split_percentage, proof_of_work_nonce, primary_token, secondary_token, close_timestamp,
     usd_amount_at_close, usd_fee_at_creation, usd_fee_at_close, market_order_effective_price, 
     trade_type, margin_order_data }) {
+
+    const priceString = exchange_rate.toLocaleString('en-US', {useGrouping: false});
+    const factor = new BN(10).pow(new BN(18 - secondary_amount.currency.precision))
+    const rawPriceBN = Web3.toWei(priceString).div(factor);
     
     this.id = dolomite_order_id;
     this.orderHash = order_hash;
@@ -47,6 +52,7 @@ export default class Order {
     this.amountS = this.side === 'SELL' ? this.amount : this.volume;
     const marketOrderPrice = market_order_effective_price && new BigNumber(market_order_effective_price);
     this.price = marketOrderPrice ? marketOrderPrice.amount : exchange_rate;
+    this.priceBN = marketOrderPrice ? marketOrderPrice.valueBN : rawPriceBN;
     this.dealtAmountPrimary = new BigNumber(dealt_amount_primary);
     this.dealtAmountSecondary = new BigNumber(dealt_amount_secondary);
     this.dealtAmountFee = new BigNumber(dealt_amount_fee);

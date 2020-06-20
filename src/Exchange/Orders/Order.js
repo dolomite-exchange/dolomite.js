@@ -2,7 +2,7 @@ import BigNumber from '../../common/BigNumber';
 import Token from '../Tokens/Token';
 import BN from 'bn.js';
 
-const { toWei } = require('web3-utils');
+import * as Web3 from 'web3-utils';
 
 const toFillPercent = (dealt, total) => dealt.amount / total.amount;
 const toOpenAmount = (dealt, total) => {
@@ -29,9 +29,11 @@ export default class Order {
                 trade_type, margin_order_data
               }) {
 
+    console.log('Web3 ', Web3);
+
     const priceString = exchange_rate.toLocaleString('en-US', { useGrouping: false });
     const factor = new BN(10).pow(new BN(18 - secondary_amount.currency.precision))
-    const rawPriceBN = toWei(priceString).div(factor);
+    const rawPriceBN = new BN(Web3.toWei(priceString)).div(factor);
 
     this.id = dolomite_order_id;
     this.orderHash = order_hash;

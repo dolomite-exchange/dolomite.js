@@ -1,7 +1,8 @@
 import BigNumber from '../../common/BigNumber';
 import Token from '../Tokens/Token';
 import BN from 'bn.js';
-import * as Web3 from 'web3-utils';
+
+const { toWei } = require('web3-utils');
 
 const toFillPercent = (dealt, total) => dealt.amount / total.amount;
 const toOpenAmount = (dealt, total) => {
@@ -17,19 +18,21 @@ const toOpenAmount = (dealt, total) => {
  * Order model
  */
 export default class Order {
-  constructor({ dolomite_order_id, order_hash, market, order_type, order_side, order_status,
-    loopring_contract_address, loopring_delegate_address, fee_collecting_wallet_address,
-    owner_address, auth_address, primary_amount, secondary_amount, usd_amount_at_creation,
-    dealt_amount_primary, dealt_amount_secondary, placement_timestamp, expiration_timestamp, fee_amount, dealt_amount_fee,
-    fee_usd_at_creation, fee_usd_average, exchange_more_than_amount, exchange_rate, ecdsa_signature,
-    margin_split_percentage, proof_of_work_nonce, primary_token, secondary_token, close_timestamp,
-    usd_amount_at_close, usd_fee_at_creation, usd_fee_at_close, market_order_effective_price, 
-    trade_type, margin_order_data }) {
+  constructor({
+                dolomite_order_id, order_hash, market, order_type, order_side, order_status,
+                loopring_contract_address, loopring_delegate_address, fee_collecting_wallet_address,
+                owner_address, auth_address, primary_amount, secondary_amount, usd_amount_at_creation,
+                dealt_amount_primary, dealt_amount_secondary, placement_timestamp, expiration_timestamp, fee_amount, dealt_amount_fee,
+                fee_usd_at_creation, fee_usd_average, exchange_more_than_amount, exchange_rate, ecdsa_signature,
+                margin_split_percentage, proof_of_work_nonce, primary_token, secondary_token, close_timestamp,
+                usd_amount_at_close, usd_fee_at_creation, usd_fee_at_close, market_order_effective_price,
+                trade_type, margin_order_data
+              }) {
 
-    const priceString = exchange_rate.toLocaleString('en-US', {useGrouping: false});
+    const priceString = exchange_rate.toLocaleString('en-US', { useGrouping: false });
     const factor = new BN(10).pow(new BN(18 - secondary_amount.currency.precision))
-    const rawPriceBN = Web3.toWei(priceString).div(factor);
-    
+    const rawPriceBN = toWei(priceString).div(factor);
+
     this.id = dolomite_order_id;
     this.orderHash = order_hash;
     this.loopringContractAddress = loopring_contract_address;
@@ -76,7 +79,7 @@ export default class Order {
     this.usdFeeAtCreation = usd_fee_at_creation && new BigNumber(usd_fee_at_creation);
     this.usdFeeAtClose = usd_fee_at_close && new BigNumber(usd_fee_at_close);
 
-    const primaryTicker = this.market.split("-")[0];
+    const primaryTicker = this.market.split('-')[0];
     if (this.tradeType === 'MARGIN') {
       const depositPrecisionedTicker = margin_order_data.deposit_precisioned_ticker;
       this.depositPaddedAmount = BigNumber.build(margin_order_data.deposit_padded_amount, depositPrecisionedTicker.precision, depositPrecisionedTicker.ticker);

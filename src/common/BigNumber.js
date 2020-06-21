@@ -1,4 +1,5 @@
 import BN from 'bn.js';
+import * as Web3 from 'web3-utils';
 const ZERO_RAW = { amount: 0, currency: { precision: 0, display_precision: 0 }};
 
 /*
@@ -62,11 +63,8 @@ export default class BigNumber {
   }
 
   static fromFloat(number, ticker = null) {
-    const num = parseFloat(number);
-    const fractional = num.toString().split('.')[1];
-    const decimals = fractional ? fractional.length : 0;
-    const amount = num * Math.pow(10, decimals);
-    return BigNumber.build(amount, decimals, ticker);
+    const amount = new BN(Web3.toWei(number.toLocaleString('en-US', {useGrouping: false}))).toString(10);
+    return BigNumber.build(amount, 18, ticker);
   }
 
   static mapped(rawMap) {

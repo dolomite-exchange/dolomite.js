@@ -14,12 +14,17 @@ const ZERO_RAW = { amount: 0, currency: { precision: 0, display_precision: 0 }};
  */
 export default class BigNumber {
   constructor(input) {
-    const { amount, currency } = input || ZERO_RAW;
+    let { amount, currency } = input || ZERO_RAW;
+
+    const localeStringOptions = {
+      useGrouping: false,
+    }
+    amount = typeof amount === 'string' ? amount : amount.toLocaleString('en-US', localeStringOptions)
 
     this.raw = { amount, currency };
     this.valueBN = !!amount ? new BN(amount) : new BN('0');
     this.value = typeof amount === 'string' ? Number.parseFloat(amount) : amount;
-    this.valueString = typeof amount === 'number' ? amount.toLocaleString('en-US', {useGrouping: false}) : amount;
+    this.valueString = typeof amount === 'number' ? amount.toLocaleString('en-US', localeStringOptions) : amount;
     this.currency = {
       ticker: currency.ticker,
       precision: currency.precision,

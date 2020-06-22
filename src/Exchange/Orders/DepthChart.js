@@ -22,7 +22,7 @@ export class OrderDepth {
     this.quantity = new BigNumber(primary_amount);
     this.total = new BigNumber(secondary_amount);
     this.totalUsd = amount_usd && new BigNumber(amount_usd);
-    this.price = BigNumber.fromFloat(exchange_rate);
+    this.price = BigNumber.fromFloat(exchange_rate, this.total.precision);
 
     this.orders = orders || [];
     this.orderedPrimaryFillAmounts = ordered_primary_fill_amounts;

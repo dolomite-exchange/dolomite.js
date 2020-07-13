@@ -11,6 +11,9 @@ export default class SmartWalletService extends Service {
     deployDepositContract: {
       post: '/v1/accounts/:account_id/smart-wallet/deposit-contracts'
     },
+    upgradeDepositContract: {
+      post: '/v1/accounts/:account_id/smart-wallet/upgrade'
+    },
     transfers: {
       post: '/v1/accounts/:account_id/smart-wallet/transfers',
       get: '/v1/accounts/:account_id/smart-wallet/transfers'
@@ -45,6 +48,25 @@ export default class SmartWalletService extends Service {
       version_address: versionAddress,
       additional_data: additionalData,
       request_type: 'CREATE',
+      nonce: nonce,
+      fee_recipient_address: feeRecipientAddress,
+      fee_token_address: feeTokenAddress,
+      fee_padded_amount: feePaddedAmount,
+      ecdsa_signature: signature,
+      request_hash: requestHash
+    }).then(body => body.data.transaction_hash);
+  }
+
+  upgradeDepositContract({ accountId, ownerAddress, targetAddress, versionAddress, additionalData,
+    nonce, feeRecipientAddress, feeTokenAddress, feePaddedAmount, signature, requestHash }) {
+
+    return this.post('upgradeDepositContract', {
+      account_id: accountId,
+      owner_address: ownerAddress,
+      target_address: targetAddress,
+      version_address: versionAddress,
+      additional_data: additionalData,
+      request_type: 'UPDATE',
       nonce: nonce,
       fee_recipient_address: feeRecipientAddress,
       fee_token_address: feeTokenAddress,

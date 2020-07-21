@@ -51,8 +51,8 @@ export default class OrderService extends Service {
     return this.post('prepareOrders', order);
   }
 
-  createOrder(order) {
-    return this.post('orders', order)
+  createOrder(order, headers = {}) {
+    return this.post('orders', order, headers)
   }
 
   createMarginOrder(order) {
@@ -65,8 +65,8 @@ export default class OrderService extends Service {
 
   // Send up transaction hash which the order depends on
   // - Order won't be submitted until transaction is confirmed
-  createDependentOrder(order) {
-    return this.post('dependentOrders', order)
+  createDependentOrder(order, headers = {}) {
+    return this.post('dependentOrders', order, headers)
   }
 
   cancelOrder({ orderHash, dolomiteOrderId, owner, v, r, s, timestamp }) {

@@ -29,7 +29,7 @@ export default class Order {
                 trade_type, margin_order_data
               }) {
 
-    const priceString = exchange_rate.toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: 20 });
+    const priceString = exchange_rate.toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: 18 });
     const factor = new BN(10).pow(new BN(18 - secondary_amount.currency.precision))
     const rawPriceBN = new BN(Web3.toWei(priceString)).div(factor);
 

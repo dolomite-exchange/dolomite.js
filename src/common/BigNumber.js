@@ -19,7 +19,7 @@ export default class BigNumber {
 
     const localeStringOptions = {
       useGrouping: false,
-      maximumFractionDigits: 20,
+      maximumFractionDigits: 18,
     }
     amount = typeof amount === 'string' ? amount : amount.toLocaleString('en-US', localeStringOptions)
 
@@ -65,7 +65,7 @@ export default class BigNumber {
 
   static fromFloat(number, precision = null, ticker = null) {
     precision = precision || 18;
-    const amountBN = new BN(Web3.toWei(number.toLocaleString('en-US', {useGrouping: false, maximumFractionDigits: 20})));
+    const amountBN = new BN(Web3.toWei(number.toLocaleString('en-US', {useGrouping: false, maximumFractionDigits: 18})));
     return BigNumber.build(amountBN.div(new BN(10).pow(new BN(18 - precision))).toString(10), precision, ticker);
   }
 

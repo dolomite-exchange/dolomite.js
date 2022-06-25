@@ -25,7 +25,7 @@
     "bn.js": "^5.1.2",
     "datejs": "^1.0.0-rc3",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "object.omit": "^3.0.0",
     "randexp": "^0.4.9",
     "uuid": "^3.4.0",
